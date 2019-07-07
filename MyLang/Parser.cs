@@ -42,10 +42,85 @@ namespace MyLang
             pos_++;
         }
 
+        void consume(TokenType expected)
+        {
+            var t = currentToken();
+            if( t.Type != expected)
+            {
+                throw new Exception($"Syntax error, expected {expected} but {t.Text}");
+            }
+            progress();
+        }
+
         public Ast.Ast Parse(IList<Token> tokens)
         {
             tokens_ = tokens;
             pos_ = 0;
+            return parseProgram();
+        }
+
+        Ast.Program parseProgram()
+        {
+            var statements = new List<Ast.Statement>();
+            while(!currentToken().IsTerminate)
+            {
+                statements.Add(parseStatement());
+            }
+            return new Ast.Program(statements);
+        }
+
+        #region Statement
+        Ast.Statement parseStatement()
+        {
+            var t = currentToken();
+            if( t.Type == TokenType.Let)
+            {
+                return parseAssignStatement();
+            }
+            else if( t.Type == TokenType.Print)
+            {
+                return parsePrintStatement();
+            }
+            else
+            {
+                throw new Exception("BUG");
+                return null;
+                //return parseExpStatement();
+            }
+        }
+
+        Ast.Statement parseAssignStatement()
+        {
+            consume(TokenType.Let);
+
+            var variable = parseExp();
+
+            consume(TokenType.Equal);
+
+            var exp = parseExp();
+
+            consume(TokenType.Semicolon);
+
+            return new Ast.AssignStatement(variable, exp);
+        }
+
+        Ast.Statement parsePrintStatement()
+        {
+            consume(TokenType.Print);
+
+            var exp = parseExp();
+
+            consume(TokenType.Semicolon);
+
+            return new Ast.PrintStatement(exp);
+        }
+
+        #endregion
+
+        #region Expression
+
+        Ast.Exp parseExp()
+        {
             return parseExp1();
         }
 
@@ -142,10 +217,16 @@ namespace MyLang
                 progress();
                 return new Ast.Number(float.Parse(t.Text));
             }
+            else if (t.IsSymbol)
+            {
+                progress();
+                return new Ast.Symbol(t.Text);
+            }
             else
             {
                 return null;
             }
         }
+        #endregion
     }
 }

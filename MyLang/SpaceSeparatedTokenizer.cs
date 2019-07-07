@@ -40,6 +40,14 @@ namespace MyLang
                     return new Token(TokenType.Star, str);
                 case "/":
                     return new Token(TokenType.Slash, str);
+                case ";":
+                    return new Token(TokenType.Semicolon, str);
+                case "=":
+                    return new Token(TokenType.Equal, str);
+                case "print":
+                    return new Token(TokenType.Print, str);
+                case "let":
+                    return new Token(TokenType.Let, str);
                 default:
                     if(numberPattern.IsMatch(str))
                     {

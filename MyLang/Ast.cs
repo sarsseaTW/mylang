@@ -22,6 +22,8 @@ namespace MyLang
             public abstract Tuple<string, Ast[]> GetDisplayInfo();
         }
 
+        #region Expression
+
         /// <summary>
         /// 式(Expression) のベースクラス
         /// </summary>
@@ -76,6 +78,81 @@ namespace MyLang
             }
         }
 
+        /// <summary>
+        /// 変数を表すAST
+        /// </summary>
+        public class Symbol : Exp
+        {
+            public readonly string Name;
+            public Symbol(string name)
+            {
+                Name = name;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Name, (Ast[])null);
+            }
+        }
+        #endregion
+
+        #region Statement
+        /// <summary>
+        /// 文(Satement) のベースクラス
+        /// </summary>
+        public class Program : Ast
+        {
+            public readonly Statement[] Statements;
+
+            public Program(IList<Statement> statements)
+            {
+                Statements = statements.ToArray();
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("Program", Statements.Select(s=>(Ast)s).ToArray());
+            }
+        }
+
+        /// <summary>
+        /// 文(Satement) のベースクラス
+        /// </summary>
+        public abstract class Statement : Ast { }
+
+        public class AssignStatement : Statement
+        {
+            public readonly Exp Variable;
+            public readonly Exp Exp;
+            public AssignStatement(Exp variable, Exp exp)
+            {
+                Variable = variable;
+                Exp = exp;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("Assign", new Ast[] { Variable, Exp });
+            }
+
+        }
+
+        public class PrintStatement : Statement
+        {
+            public readonly Exp Exp;
+            public PrintStatement(Exp exp)
+            {
+                Exp = exp;
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("print", new Ast[] { Exp });
+            }
+        }
+
+        #endregion
+
+        #region AstDisplayer
         /// <summary>
         /// ASTを文字列表現に変換するクラス
         /// </summary>
@@ -141,6 +218,7 @@ namespace MyLang
                 list_.Add(Tuple.Create(level, text));
             }
         }
+        #endregion
     }
 
 }

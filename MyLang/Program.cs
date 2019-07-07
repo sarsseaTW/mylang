@@ -70,15 +70,12 @@ class Program
 
         if( parseOnly)
         {
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
+            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, true));
             exit(0);
         }
 
         // Interpreter で実行する
-        var result = interpreter.Run(ast);
-
-        // 答えを出力する
-        Console.WriteLine(result);
+        interpreter.Run(ast);
 
         exit(0);
     }
