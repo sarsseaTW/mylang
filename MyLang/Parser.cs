@@ -57,18 +57,30 @@ namespace MyLang
                 return null;
             }
 
+            return parseExp1Rest(lhs);
+        }
+
+        /// <summary>
+        /// 左結合のために、Exp1を分割したもの
+        /// </summary>
+        /// <param name="lhs">パース済みの左辺項</param>
+        Ast.Exp parseExp1Rest(Ast.Exp lhs)
+        {
             var t = currentToken();
             if (t.Type == TokenType.Plus || t.Type == TokenType.Minus)
             {
                 var binopType = BinOpMap[t.Type];
                 progress();
 
-                var rhs = parseExp1();
+                var rhs = parseExp2();
                 if (rhs == null)
                 {
                     throw new Exception("No rhs parsed");
                 }
-                return new Ast.BinOp(binopType, lhs, rhs);
+
+                var exp = new Ast.BinOp(binopType, lhs, rhs);
+
+                return parseExp1Rest(exp);
             }
             else
             {
@@ -76,6 +88,9 @@ namespace MyLang
             }
         }
 
+        /// <summary>
+        /// "*", "/" の演算子をパースする
+        /// </summary>
         Ast.Exp parseExp2()
         {
             var lhs = parseValue();
@@ -84,18 +99,30 @@ namespace MyLang
                 return null;
             }
 
+            return parseExp2Rest(lhs);
+        }
+
+        /// <summary>
+        /// 左結合のために、Exp2を分割したもの
+        /// </summary>
+        /// <param name="lhs">パース済みの左辺項</param>
+        Ast.Exp parseExp2Rest(Ast.Exp lhs)
+        {
             var t = currentToken();
             if (t.Type == TokenType.Star || t.Type == TokenType.Slash)
             {
                 var binopType = BinOpMap[t.Type];
                 progress();
 
-                var rhs = parseExp2();
-                if( rhs == null)
+                var rhs = parseValue();
+                if (rhs == null)
                 {
                     throw new Exception("No rhs parsed");
                 }
-                return new Ast.BinOp(binopType, lhs, rhs);
+
+                var exp = new Ast.BinOp(binopType, lhs, rhs);
+
+                return parseExp2Rest(exp);
             }
             else
             {
@@ -103,6 +130,10 @@ namespace MyLang
             }
         }
 
+        /// <summary>
+        /// 値をパースする
+        /// </summary>
+        /// <returns></returns>
         Ast.Exp parseValue()
         {
             var t = currentToken();
