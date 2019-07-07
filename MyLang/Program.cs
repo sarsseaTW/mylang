@@ -8,28 +8,13 @@ using MyLang;
 class Program
 {
     /// <summary>
-    /// デバッガがアタッチされている場合は、キーの入力を待つ
-    ///
-    /// Visual Studioの開津環境で、コンソールがすぐに閉じてしまうのの対策として使用している
-    /// </summary>
-    static void waitKey()
-    {
-        if (Debugger.IsAttached)
-        {
-            Console.ReadKey();
-        }
-    }
-
-    /// <summary>
-    /// エントリポイント
-    /// 
+    /// コマンド の entry point
     /// </summary>
     /// <param name="args">コマンドライン引数</param>
     static void Main(string[] args)
     {
-        bool tokenizeOnly = false;
-        bool parseOnly = false;
-        bool trace = false;
+        bool tokenizeOnly = false; // tokenize だけで終わるかどうか
+        bool parseOnly = false; // parse だけで終わるかどうか
 
         // 引数をparseする
         var rest = new List<string>();
@@ -60,7 +45,7 @@ class Program
             }
         }
 
-
+        // 引数がないなら、ヘルプを表示して終わる
         if( rest.Count <= 0)
         {
             showHelpAndExit();
@@ -71,34 +56,36 @@ class Program
         var parser = new Parser();
         var interpreter = new Interpreter();
 
-
-
         // Tokenize を行う
         var tokens = tokenizer.Tokenize(string.Join(" ", rest.ToArray()));
 
         if( tokenizeOnly)
         {
             Console.WriteLine(string.Join(" ", tokens.Select(t => t.Text).ToArray()));
-            waitKey();
-            return;
+            exit(0);
         }
 
+        // Parse を行う
         var ast = parser.Parse(tokens);
 
         if( parseOnly)
         {
             Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
-            waitKey();
-            return;
+            exit(0);
         }
 
+        // Interpreter で実行する
         var result = interpreter.Run(ast);
 
+        // 答えを出力する
         Console.WriteLine(result);
 
-        waitKey();
+        exit(0);
     }
 
+    /// <summary>
+    /// ヘルプを表示して終わる
+    /// </summary>
     static void showHelpAndExit()
     {
         Console.WriteLine(@"
@@ -119,8 +106,30 @@ Example:
     > MyLang.exe --tokenize ""1 + 2 * 3""
     > MyLang.exe --parse ""1 + 2 * 3""
 ");
+        exit(0);
+    }
+
+    /// <summary>
+    /// デバッガがアタッチされている場合は、キーの入力を待つ
+    ///
+    /// Visual Studioの開津環境で、コンソールがすぐに閉じてしまうのの対策として使用している
+    /// </summary>
+    static void waitKey()
+    {
+        if (Debugger.IsAttached)
+        {
+            Console.ReadKey();
+        }
+    }
+
+    /// <summary>
+    /// 終了する
+    /// </summary>
+    /// <param name="resultCode"></param>
+    static void exit(int resultCode) 
+    {
         waitKey();
-        Environment.Exit(0);
+        Environment.Exit(resultCode);
     }
 
 }

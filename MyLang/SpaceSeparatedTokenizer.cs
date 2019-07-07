@@ -13,10 +13,6 @@ namespace MyLang
     /// </summary>
     class SpaceSeparatedTokenizer : ITokenizer
     {
-        static Regex sepratorPattern = new Regex(@"\s+");
-        static Regex numberPattern = new Regex(@"^\d+$");
-        static Regex symbolPattern = new Regex(@"^[\w_][\w_0-9]*$");
-
         public SpaceSeparatedTokenizer()
         {
 
@@ -24,36 +20,14 @@ namespace MyLang
 
         public IList<Token> Tokenize(string src)
         {
-            var tokenStrs = sepratorPattern.Split(src);
-            return tokenStrs.Select(str => strToToken(str)).Concat(new[] { new Token(TokenType.Terminate, "[EOF]")}).ToArray();
+            // TODO: 仮のダミー実装
+            var dummy = new List<Token>();
+            dummy.Add(new Token(TokenType.Number, "1"));
+            dummy.Add(new Token(TokenType.Plus, "+"));
+            dummy.Add(new Token(TokenType.Number, "2"));
+            dummy.Add(new Token(TokenType.Terminate, "[EOF]"));
+            return dummy;
         }
 
-        Token strToToken(string str)
-        {
-            switch( str)
-            {
-                case "+":
-                    return new Token(TokenType.Plus, str);
-                case "-":
-                    return new Token(TokenType.Minus, str);
-                case "*":
-                    return new Token(TokenType.Star, str);
-                case "/":
-                    return new Token(TokenType.Slash, str);
-                default:
-                    if(numberPattern.IsMatch(str))
-                    {
-                        return new Token(TokenType.Number, str);
-                    }
-                    else if (symbolPattern.IsMatch(str))
-                    {
-                        return new Token(TokenType.Symbol, str);
-                    }
-                    else
-                    {
-                        throw new Exception($"Invalid token {str}");
-                    }
-            }
-        }
     }
 }
