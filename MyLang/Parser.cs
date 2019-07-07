@@ -38,7 +38,7 @@ namespace MyLang
         /// </summary>
         void progress()
         {
-            Console.WriteLine($"progress {currentToken().Text}");
+            Logger.Trace($"progress {currentToken().Text}");
             pos_++;
         }
 

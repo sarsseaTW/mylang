@@ -50,6 +50,10 @@ class Program
                 case "--parse":
                     parseOnly = true;
                     break;
+                case "-d":
+                case "--debug":
+                    Logger.LogEnabled = true;
+                    break;
                 default:
                     rest.Add(arg);
                     break;
@@ -70,7 +74,7 @@ class Program
 
 
         // Tokenize を行う
-        var tokens = tokenizer.Tokenize(rest[0]);
+        var tokens = tokenizer.Tokenize(string.Join(" ", rest.ToArray()));
 
         if( tokenizeOnly)
         {
