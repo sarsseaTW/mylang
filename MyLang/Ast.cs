@@ -132,7 +132,7 @@ namespace MyLang
 
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create("Assign", new Ast[] { Variable, Exp });
+                return Tuple.Create("let", new Ast[] { Variable, Exp });
             }
 
         }
@@ -147,6 +147,49 @@ namespace MyLang
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
                 return Tuple.Create("print", new Ast[] { Exp });
+            }
+        }
+
+        public class ReturnStatement : Statement
+        {
+            public readonly Exp Exp;
+            public ReturnStatement(Exp exp)
+            {
+                Exp = exp;
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("return", new Ast[] { Exp });
+            }
+        }
+
+        public class FunctionStatement : Statement
+        {
+            public readonly Symbol Name;
+            public readonly Symbol[] Parameters;
+            public readonly Statement[] Body;
+            public FunctionStatement(Symbol name, IList<Symbol> parameters, IList<Statement> body)
+            {
+                Name = name;
+                Parameters = parameters.ToArray();
+                Body = body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("function", new Ast[] { Name, new AstList(Parameters), new AstList(Body) });
+            }
+        }
+
+        public class AstList : Ast
+        {
+            public Ast[] List;
+            public AstList(Ast[] list)
+            {
+                List = list;
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("", List);
             }
         }
 

@@ -44,10 +44,24 @@ namespace MyLang
                     return new Token(TokenType.Semicolon, str);
                 case "=":
                     return new Token(TokenType.Equal, str);
+                case "(":
+                    return new Token(TokenType.LParen, str);
+                case ")":
+                    return new Token(TokenType.RParen, str);
+                case ",":
+                    return new Token(TokenType.Comma, str);
+                case "{":
+                    return new Token(TokenType.LBraket, str);
+                case "}":
+                    return new Token(TokenType.RBraket, str);
                 case "print":
                     return new Token(TokenType.Print, str);
                 case "let":
                     return new Token(TokenType.Let, str);
+                case "function":
+                    return new Token(TokenType.Function, str);
+                case "return":
+                    return new Token(TokenType.Return, str);
                 default:
                     if(numberPattern.IsMatch(str))
                     {

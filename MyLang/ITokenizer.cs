@@ -22,9 +22,16 @@ namespace MyLang
         Slash, // "/"
         Semicolon, // ";"
         Equal, // "="
+        LParen, // "("
+        RParen, // ")"
+        Comma, // ","
+        LBraket, // "{"
+        RBraket, // "}"
 
         Let, // "let"
         Print, // "print"
+        Function, // "function"
+        Return, // "return"
     }
 
     /// <summary>

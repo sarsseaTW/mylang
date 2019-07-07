@@ -42,7 +42,7 @@ namespace MyLang
             pos_++;
         }
 
-        void consume(TokenType expected)
+        Token consume(TokenType expected)
         {
             var t = currentToken();
             if( t.Type != expected)
@@ -50,6 +50,7 @@ namespace MyLang
                 throw new Exception($"Syntax error, expected {expected} but {t.Text}");
             }
             progress();
+            return t;
         }
 
         public Ast.Ast Parse(IList<Token> tokens)
@@ -80,6 +81,14 @@ namespace MyLang
             else if( t.Type == TokenType.Print)
             {
                 return parsePrintStatement();
+            }
+            else if (t.Type == TokenType.Function)
+            {
+                return parseFunctionStatement();
+            }
+            else if (t.Type == TokenType.Return)
+            {
+                return parseReturnStatement();
             }
             else
             {
@@ -113,6 +122,70 @@ namespace MyLang
             consume(TokenType.Semicolon);
 
             return new Ast.PrintStatement(exp);
+        }
+
+        Ast.Statement parseReturnStatement()
+        {
+            consume(TokenType.Return);
+
+            var exp = parseExp();
+
+            consume(TokenType.Semicolon);
+
+            return new Ast.ReturnStatement(exp);
+        }
+
+
+        Ast.Statement parseFunctionStatement()
+        {
+            consume(TokenType.Function);
+
+            var name = parseSymbol();
+
+            consume(TokenType.LParen);
+
+            var parameters = new List<Ast.Symbol>();
+            if( currentToken().Type != TokenType.RParen)
+            {
+                while (true)
+                {
+                    var arg = parseSymbol();
+                    parameters.Add(arg);
+                    if (currentToken().Type != TokenType.Comma)
+                    {
+                        break;
+                    }
+                    consume(TokenType.Comma);
+                }
+            }
+
+            consume(TokenType.RParen);
+
+            var body = parseBlock();
+
+            return new Ast.FunctionStatement(name, parameters.ToArray(), body);
+        }
+
+        Ast.Symbol parseSymbol()
+        {
+            var t = consume(TokenType.Symbol);
+            return new Ast.Symbol(t.Text);
+        }
+
+        Ast.Statement[] parseBlock()
+        {
+            consume(TokenType.LBraket);
+
+            var statements = new List<Ast.Statement>();
+            while( currentToken().Type != TokenType.RBraket)
+            {
+                var stat = parseStatement();
+                statements.Add(stat);
+            }
+
+            consume(TokenType.RBraket);
+
+            return statements.ToArray();
         }
 
         #endregion
