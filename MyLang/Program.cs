@@ -101,16 +101,23 @@ class Program
 
     static void showHelpAndExit()
     {
-        Console.WriteLine(@"mylan.exe
+        Console.WriteLine(@"
 My Small Language.
 
 Usage:
-    > mylang [options...] ""program""
+    > MyLang.exe [options...] ""program""
+
 Options:
     -t, --tokenize : Show token list.
     -p, --parse    : Show parsed abstract syntax tree.
     -d, --debug    : Print debug log (for debug).
     -h, --help     : Show help.
+
+Example:
+    > MyLang.exe ""1 + 2""
+    > MyLang.exe --debug ""1 + 2 * 3""
+    > MyLang.exe --tokenize ""1 + 2 * 3""
+    > MyLang.exe --parse ""1 + 2 * 3""
 ");
         waitKey();
         Environment.Exit(0);

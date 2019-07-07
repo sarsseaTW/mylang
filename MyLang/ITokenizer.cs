@@ -11,6 +11,8 @@ namespace MyLang
     /// </summary>
     public enum TokenType
     {
+        Terminate, // ソースの終わりを表す
+
         Number, // 数値
         Symbol, // 識別子
 

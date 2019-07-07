@@ -24,13 +24,13 @@ end
 def test_tokenizer
   puts "Testing tokenizer ..."
   test_str = <<EOT
-  1             # 1
-  1 + 2         # 1 + 2
-  1   +   2     # 1 + 2
-  1   +  2 * 3  # 1 + 2 * 3
-  # 1+2         # 1 + 2         # スペースがなくても、Tokenizeできるようにする
-  # a + b       # a + b         # Symbolも対応する
-  # (1 + 2) * 3 # ( 1 + 2 )     # "(", ")" に対応する
+  1               # 1 [EOF]
+  1 + 2           # 1 + 2 [EOF]
+  1   +   2       # 1 + 2 [EOF]
+  1   +  2 * 3    # 1 + 2 * 3 [EOF]
+  # 1+2           # 1 + 2 [EOF]        # スペースがなくても、Tokenizeできるようにする
+  # a + b         # a + b [EOF]        # Symbolも対応する
+  # (1 + 2) * 3   # ( 1 + 2 ) [EOF]    # "(", ")" に対応する
 EOT
   testcases = parse_testcases(test_str)
   testcases.each do |input, expected_output|

@@ -49,7 +49,7 @@ namespace MyLang
             return parseExp1();
         }
 
-        Ast.Ast parseExp1()
+        Ast.Exp parseExp1()
         {
             var lhs = parseExp2();
             if (lhs == null)
@@ -63,7 +63,7 @@ namespace MyLang
                 var binopType = BinOpMap[t.Type];
                 progress();
 
-                var rhs = parseExp2();
+                var rhs = parseExp1();
                 if (rhs == null)
                 {
                     throw new Exception("No rhs parsed");
@@ -90,7 +90,7 @@ namespace MyLang
                 var binopType = BinOpMap[t.Type];
                 progress();
 
-                var rhs = parseValue();
+                var rhs = parseExp2();
                 if( rhs == null)
                 {
                     throw new Exception("No rhs parsed");

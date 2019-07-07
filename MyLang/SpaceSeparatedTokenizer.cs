@@ -25,7 +25,7 @@ namespace MyLang
         public IList<Token> Tokenize(string src)
         {
             var tokenStrs = sepratorPattern.Split(src);
-            return tokenStrs.Select(str => strToToken(str)).ToArray();
+            return tokenStrs.Select(str => strToToken(str)).Concat(new[] { new Token(TokenType.Terminate, "[EOF]")}).ToArray();
         }
 
         Token strToToken(string str)
