@@ -4,74 +4,76 @@ require 'open3'
 
 MY_LANG_EXE = "MyLang/bin/Debug/MyLang.exe"
 
-# テストケースを分割する
-#
-# - テストケースは、１行ごとに一つのテストケース
-# - 入力と出力は "#" で分割される
-# - 前後のスペースは、削除される
-# - 空行は無視される
-# - 先頭が"#"の場合も無視される
-#
-# parse_testcases("a # b") => [['a', 'b']]
-# parse_testcases("a # b\n c # d") => [['a', 'b']]
-def parse_testcases(str)
-  lines = str.split(/\n/).reject(&:empty?).reject{|s| s =~ /^\s+#/ }
-  testcases = lines.map do |l| 
-    elements = l.split(/#/).map{|element| element.strip }
+def run_test(testcases, cmd)
+  total = 0
+  success = 0
+
+  testcases.each do |input, expected_output|
+    total += 1
+    output, status = Open3.capture2e(*cmd, input)
+    output.strip!
+
+    if status.exitstatus != 0
+      puts "ERROR: #{input}"
+      next
+    end
+    
+    if output != expected_output.to_s
+      puts "NG: #{input} => #{output}, but expect #{expected_output}"
+    else
+      success += 1
+      puts "OK: #{input} => #{output}"
+    end
+  end
+  if total == success
+    puts "OK: #{total} testcases passed"
+  else
+    puts "ERR: #{total-success} testcases failed"
+    raise
   end
 end
 
 def test_tokenizer
-  puts "Testing tokenizer ..."
-  test_str = <<EOT
-  1               # 1 [EOF]
-  1 + 2           # 1 + 2 [EOF]
-  1   +   2       # 1 + 2 [EOF]
-  1   +  2 * 3    # 1 + 2 * 3 [EOF]
-  # 1+2           # 1 + 2 [EOF]        # スペースがなくても、Tokenizeできるようにする
-  # a + b         # a + b [EOF]        # Symbolも対応する
-  # (1 + 2) * 3   # ( 1 + 2 ) [EOF]    # "(", ")" に対応する
-EOT
-  testcases = parse_testcases(test_str)
-  testcases.each do |input, expected_output|
-    output, status = Open3.capture2e(MY_LANG_EXE, '-t', input)
-    output.strip!
-
-    if status.exitstatus != 0
-      puts "ERROR: #{input}"
-      next
-    end
-    
-    if output != expected_output
-      puts "NG: #{input} => #{output} ,but expect #{expected_output}"
-    else
-      puts "OK: #{input} => #{output}"
-    end
-  end
+  testcases = [
+    ["1", "1 [EOF]"],
+    ["1 + 2", "1 + 2 [EOF]"],
+    ["1   +   2", "1 + 2 [EOF]"],
+    ["1   +  2 * 3", "1 + 2 * 3 [EOF]"],
+    #["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
+    #["a + b", "a + b [EOF]"], # Symbolも対応する
+    #["(1 + 2) * 3", "( 1 + 2 ) [EOF]"], # "(", ")" に対応する
+  ]
+  puts "** Testing Tokenizer ..."
+  run_test(testcases, [MY_LANG_EXE, '--tokenize'])
 end
 
 
 def test_parser
-  puts "Testing parser ..."
-  test_str = <<EOT
-EOT
-  testcases = parse_testcases(test_str)
-  testcases.each do |input, expected_output|
-    output, status = Open3.capture2e(MY_LANG_EXE, '-p', input)
-    output.strip!
+  testcases = [
+    ["1", "1"],
+    ["1 + 2", "Add( 1 2 )"],
+    ["2 * 3", "Multiply( 2 3 )"],
+    ["1 + 2 * 3", "Add( 1 Multiply( 2 3 ) )"],
+    ["1 + 2 + 3", "Add( Add( 1 2 ) 3 )"],
+    ["1 * 2 * 3", "Multiply( Multiply( 1 2 ) 3 )"],
+  ]
+  puts "** Testing Parser ..."
+  run_test(testcases, [MY_LANG_EXE, '--parse'])
+end
 
-    if status.exitstatus != 0
-      puts "ERROR: #{input}"
-      next
-    end
-    
-    if output != expected_output
-      puts "NG: #{input} => #{output} ,but expect #{expected_output}"
-    else
-      puts "OK: #{input} => #{output}"
-    end
-  end
+def test_interpreter
+  testcases = [
+    ["1", 1],
+    ["1 + 2", 3],
+    ["2 * 3", 6],
+    ["1 + 2 * 3", 7],
+    ["1 + 2 + 3", 6],
+    ["1 * 2 * 3", 6],
+  ]
+  puts "** Testing Interpreter ..."
+  run_test(testcases, [MY_LANG_EXE])
 end
 
 test_tokenizer
 test_parser
+test_interpreter
