@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using MyLang.Ast;
 
 namespace MyLang
@@ -8,6 +9,7 @@ namespace MyLang
     public class Env
     {
         Dictionary<string, float> variables_ = new Dictionary<string, float>();
+        Dictionary<string, FunctionStatement> functions_ = new Dictionary<string, FunctionStatement>();
 
         public Env()
         {
@@ -23,6 +25,16 @@ namespace MyLang
         {
             variables_[name] = val;
         }
+
+        public Ast.FunctionStatement GetFunction(string name)
+        {
+            return functions_[name];
+        }
+
+        public void SetFunction(string name, Ast.FunctionStatement func)
+        {
+            functions_[name] = func;
+        }
     }
 
     public class Interpreter
@@ -35,12 +47,12 @@ namespace MyLang
 
         public void Run(Ast.Ast ast)
         {
-            runProgram((Ast.Program)ast);
+            runBlock(((Ast.Program)ast).Statements);
         }
 
-        public void runProgram(Ast.Program prog)
+        public void runBlock(Ast.Statement[] statements)
         {
-            foreach( var stat in prog.Statements)
+            foreach( var stat in statements)
             {
                 if (stat is PrintStatement) {
                     var s = (PrintStatement)stat;
@@ -52,6 +64,15 @@ namespace MyLang
                     var s = (AssignStatement)stat;
                     float value = runExp(s.Exp);
                     env_.Set(((Ast.Symbol)s.Variable).Name, value);
+                }
+                else if (stat is FunctionStatement)
+                {
+                    var s = (FunctionStatement)stat;
+                    env_.SetFunction(s.Name.Name, s);
+                }
+                else
+                {
+                    throw new Exception("BUG");
                 }
             }
         }
@@ -85,6 +106,21 @@ namespace MyLang
             else if (exp is Symbol)
             {
                 var symbol = exp as Symbol;
+                return env_.Get(symbol.Name);
+            }
+            else if (exp is ApplyFunction)
+            {
+                var e = exp as ApplyFunction;
+                var func = env_.GetFunction(e.Name.Name);
+                var args = e.Args.Select(arg => runExp(arg)).ToList();
+
+                foreach( var parameter in func.Parameters)
+                {
+
+                }
+
+                runBlock(func.Body);
+
                 return env_.Get(symbol.Name);
             }
             else

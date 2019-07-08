@@ -94,6 +94,26 @@ namespace MyLang
                 return Tuple.Create(Name, (Ast[])null);
             }
         }
+
+        /// <summary>
+        /// 関数の適用(Apply Function)を表すAST
+        /// </summary>
+        public class ApplyFunction : Exp
+        {
+            public readonly Symbol Name;
+            public readonly Exp[] Args;
+            public ApplyFunction(Symbol name, Exp[] args)
+            {
+                Name = name;
+                Args = args;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("ApplyFunction", new Ast[] { Name }.Concat(Args).ToArray());
+            }
+        }
+
         #endregion
 
         #region Statement

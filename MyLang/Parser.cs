@@ -292,8 +292,34 @@ namespace MyLang
             }
             else if (t.IsSymbol)
             {
-                progress();
-                return new Ast.Symbol(t.Text);
+                var name = parseSymbol();
+
+                if (currentToken().Type != TokenType.LParen)
+                {
+                    // 変数参照
+                    return name;
+                }
+                else
+                {
+                    // 関数適用
+                    consume(TokenType.LParen);
+
+                    // 引数のリストをパースする
+                    var args = new List<Ast.Exp>();
+                    while(true)
+                    {
+                        args.Add(parseExp());
+                        if( currentToken().Type != TokenType.Comma)
+                        {
+                            break;
+                        }
+                        consume(TokenType.Comma);
+                    }
+
+                    consume(TokenType.RParen);
+
+                    return new Ast.ApplyFunction(name, args.ToArray());
+                }
             }
             else
             {
