@@ -42,6 +42,20 @@ namespace MyLang
             pos_++;
         }
 
+        /// <summary>
+        /// パースする
+        /// 
+        /// BNF:
+        /// 
+        /// exp ::= exp1
+        /// 
+        /// exp1::= exp_value | exp_value exp1_op exp1
+        /// 
+        /// exp_value = number | symbol
+        /// 
+        /// exp1_op::= + | -
+        /// 
+        /// </summary>
         public Ast.Ast Parse(IList<Token> tokens)
         {
             tokens_ = tokens;
@@ -51,15 +65,32 @@ namespace MyLang
 
         Ast.Exp parseExp1()
         {
-            var lhs = parseExp2();
+            var lhs = parseValue();
             if (lhs == null)
             {
                 return null;
             }
 
-            return parseExp1Rest(lhs);
+            var t = currentToken();
+            if (t.Type == TokenType.Plus || t.Type == TokenType.Minus)
+            {
+                var binopType = BinOpMap[t.Type];
+                progress();
+                var rhs = parseExp1();
+                if (rhs == null)
+                {
+                    throw new Exception("No rhs parsed");
+                }
+
+                return new Ast.BinOp(binopType, lhs, rhs);
+            }
+            else
+            {
+                return lhs;
+            }
         }
 
+#if false
         /// <summary>
         /// 左結合のために、Exp1を分割したもの
         /// </summary>
@@ -129,6 +160,7 @@ namespace MyLang
                 return lhs;
             }
         }
+#endif
 
         /// <summary>
         /// 値をパースする
