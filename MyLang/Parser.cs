@@ -49,11 +49,14 @@ namespace MyLang
         /// 
         /// exp ::= exp1
         /// 
-        /// exp1::= exp_value | exp_value exp1_op exp1
+        /// exp1 ::= exp_2 (A) | exp_2 (B) exp1_op exp1
+        /// 
+        /// exp2 ::= exp_value (A) | exp_value (B) exp1_op exp2
         /// 
         /// exp_value = number | symbol
         /// 
         /// exp1_op::= + | -
+        /// exp1_op::= * | /
         /// 
         /// </summary>
         public Ast.Ast Parse(IList<Token> tokens)
@@ -65,7 +68,7 @@ namespace MyLang
 
         Ast.Exp parseExp1()
         {
-            var lhs = parseValue();
+            var lhs = parseExp2();
             if (lhs == null)
             {
                 return null;
@@ -74,6 +77,7 @@ namespace MyLang
             var t = currentToken();
             if (t.Type == TokenType.Plus || t.Type == TokenType.Minus)
             {
+                // Pattern (B)
                 var binopType = BinOpMap[t.Type];
                 progress();
                 var rhs = parseExp1();
@@ -86,6 +90,36 @@ namespace MyLang
             }
             else
             {
+                // Pattern (A)
+                return lhs;
+            }
+        }
+
+        Ast.Exp parseExp2()
+        {
+            var lhs = parseExpValue();
+            if (lhs == null)
+            {
+                return null;
+            }
+
+            var t = currentToken();
+            if (t.Type == TokenType.Star || t.Type == TokenType.Slash)
+            {
+                // Pattern (B)
+                var binopType = BinOpMap[t.Type];
+                progress();
+                var rhs = parseExp2();
+                if (rhs == null)
+                {
+                    throw new Exception("No rhs parsed");
+                }
+
+                return new Ast.BinOp(binopType, lhs, rhs);
+            }
+            else
+            {
+                // Pattern (A)
                 return lhs;
             }
         }
@@ -166,7 +200,7 @@ namespace MyLang
         /// 値をパースする
         /// </summary>
         /// <returns></returns>
-        Ast.Exp parseValue()
+        Ast.Exp parseExpValue()
         {
             var t = currentToken();
             if (t.IsNumber)
