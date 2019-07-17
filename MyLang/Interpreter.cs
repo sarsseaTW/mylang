@@ -11,6 +11,8 @@ namespace MyLang
         Dictionary<string, float> variables_ = new Dictionary<string, float>();
         Dictionary<string, FunctionStatement> functions_ = new Dictionary<string, FunctionStatement>();
 
+        float returnValue_;
+
         public Env()
         {
 
@@ -34,6 +36,16 @@ namespace MyLang
         public void SetFunction(string name, Ast.FunctionStatement func)
         {
             functions_[name] = func;
+        }
+
+        public void SetReturnValue(float val)
+        {
+            returnValue_ = val;
+        }
+
+        public float GetReturnValue()
+        {
+            return returnValue_;
         }
     }
 
@@ -69,6 +81,12 @@ namespace MyLang
                 {
                     var s = (FunctionStatement)stat;
                     env_.SetFunction(s.Name.Name, s);
+                }
+                else if (stat is ReturnStatement)
+                {
+                    var s = (ReturnStatement)stat;
+                    float value = runExp(s.Exp);
+                    env_.SetReturnValue(value);
                 }
                 else
                 {
@@ -114,14 +132,15 @@ namespace MyLang
                 var func = env_.GetFunction(e.Name.Name);
                 var args = e.Args.Select(arg => runExp(arg)).ToList();
 
-                foreach( var parameter in func.Parameters)
-                {
-
+                for (int i = 0; i < func.Parameters.Length; i++) {
+                    var parameter = func.Parameters[i];
+                    var arg = args[i];
+                    env_.Set(parameter.Name, arg);
                 }
 
                 runBlock(func.Body);
 
-                return env_.Get(symbol.Name);
+                return env_.GetReturnValue();
             }
             else
             {
