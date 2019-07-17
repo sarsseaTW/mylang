@@ -24,6 +24,8 @@ namespace MyLang
 
         }
 
+        #region Utilities
+
         /// <summary>
         /// 現在のトークンを取得する
         /// </summary>
@@ -52,6 +54,8 @@ namespace MyLang
             progress();
             return t;
         }
+
+        #endregion
 
         public Ast.Ast Parse(IList<Token> tokens)
         {

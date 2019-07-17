@@ -242,7 +242,7 @@ namespace MyLang
             ///    )"
             /// </summary>
             /// <param name="ast">対象のAST</param>
-            /// <param name="prettyPrint">Pretty pring をするかどうか</param>
+            /// <param name="prettyPrint">Pretty print をするかどうか</param>
             /// <returns></returns>
             public string BuildString(Ast ast, bool prettyPrint = true)
             {
