@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 using MyLang;
@@ -15,6 +16,7 @@ class Program
     {
         bool tokenizeOnly = false; // tokenize だけで終わるかどうか
         bool parseOnly = false; // parse だけで終わるかどうか
+        string src = null; // 直接実行するソース
 
         // 引数をparseする
         var rest = new List<string>();
@@ -39,16 +41,14 @@ class Program
                 case "--debug":
                     Logger.LogEnabled = true;
                     break;
+                case "-e":
+                    src = args[i + 1];
+                    i++;
+                    break;
                 default:
                     rest.Add(arg);
                     break;
             }
-        }
-
-        // 引数がないなら、ヘルプを表示して終わる
-        if( rest.Count <= 0)
-        {
-            showHelpAndExit();
         }
 
         // 各実行器を用意する
@@ -56,8 +56,20 @@ class Program
         var parser = new Parser();
         var interpreter = new Interpreter();
 
+        // ソースファイルを読み込む
+        if( src == null)
+        {
+            // 引数がないなら、ヘルプを表示して終わる
+            if (rest.Count != 1)
+            {
+                showHelpAndExit();
+            }
+
+            src = File.ReadAllText(rest[0]);
+        }
+
         // Tokenize を行う
-        var tokens = tokenizer.Tokenize(string.Join(" ", rest.ToArray()));
+        var tokens = tokenizer.Tokenize(src);
 
         if( tokenizeOnly)
         {
@@ -89,19 +101,21 @@ class Program
 My Small Language.
 
 Usage:
-    > MyLang.exe [options...] ""program""
+    > MyLang.exe [options...] <source-file>
 
 Options:
     -t, --tokenize : Show token list.
     -p, --parse    : Show parsed abstract syntax tree.
     -d, --debug    : Print debug log (for debug).
     -h, --help     : Show help.
+    -e ""source""  : Run specified source text.
 
 Example:
-    > MyLang.exe ""1 + 2""
-    > MyLang.exe --debug ""1 + 2 * 3""
-    > MyLang.exe --tokenize ""1 + 2 * 3""
-    > MyLang.exe --parse ""1 + 2 * 3""
+    > MyLang.exe program.mylang
+    > MyLang.exe -e ""1 + 2""
+    > MyLang.exe --debug -e ""1 + 2 * 3""
+    > MyLang.exe --tokenize -e ""1 + 2 * 3""
+    > MyLang.exe --parse -e ""1 + 2 * 3""
 ");
         exit(0);
     }
