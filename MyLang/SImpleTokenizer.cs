@@ -144,7 +144,7 @@ namespace MyLang
             { ",", TokenType.Comma },
             { "print", TokenType.Print },
             { "let", TokenType.Let },
-            { "def", TokenType.Def },
+            { "function", TokenType.Function },
             { "end", TokenType.End },
             { "return", TokenType.Return },
         };

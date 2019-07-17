@@ -93,7 +93,7 @@ namespace MyLang
             {
                 return parsePrintStatement();
             }
-            else if (t.Type == TokenType.Def)
+            else if (t.Type == TokenType.Function)
             {
                 return parseFunctionStatement();
             }
@@ -147,13 +147,15 @@ namespace MyLang
 
         Ast.Statement parseFunctionStatement()
         {
-            consume(TokenType.Def);
+            consume(TokenType.Function);
 
             var name = parseSymbol();
 
+            consume(TokenType.LBraket);
+
             var body = parseBlock();
 
-            consume(TokenType.End);
+            consume(TokenType.RBraket);
 
             return new Ast.FunctionStatement(name, body);
         }

@@ -1,5 +1,5 @@
-def add
+function add {
     return @1+@2; 
-end
+}
 
 print add(1 ,add(2,3));

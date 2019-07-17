@@ -194,7 +194,7 @@ namespace MyLang
             }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create("def", new Ast[] { Name, new AstList(Body) });
+                return Tuple.Create("function", new Ast[] { Name, new AstList(Body) });
             }
         }
 
