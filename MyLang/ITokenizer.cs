@@ -30,7 +30,8 @@ namespace MyLang
 
         Let, // "let"
         Print, // "print"
-        Function, // "function"
+        Def, // "def"
+        End, // "end"
         Return, // "return"
     }
 

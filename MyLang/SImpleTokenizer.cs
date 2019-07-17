@@ -65,7 +65,7 @@ namespace MyLang
 
         bool isAlphabet(char c)
         {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '@';
         }
 
         bool isAlphabetOrDigit(char c)
@@ -144,7 +144,8 @@ namespace MyLang
             { ",", TokenType.Comma },
             { "print", TokenType.Print },
             { "let", TokenType.Let },
-            { "function", TokenType.Function },
+            { "def", TokenType.Def },
+            { "end", TokenType.End },
             { "return", TokenType.Return },
         };
 

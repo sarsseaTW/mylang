@@ -59,7 +59,15 @@ namespace MyLang
 
         public void Run(Ast.Ast ast)
         {
-            runBlock(((Ast.Program)ast).Statements);
+            if( ast is Exp)
+            {
+                var result = runExp((Ast.Exp)ast);
+                Console.WriteLine(result);
+            }
+            else
+            {
+                runBlock(((Ast.Program)ast).Statements);
+            }
         }
 
         public void runBlock(Ast.Statement[] statements)
@@ -130,12 +138,11 @@ namespace MyLang
             {
                 var e = exp as ApplyFunction;
                 var func = env_.GetFunction(e.Name.Name);
-                var args = e.Args.Select(arg => runExp(arg)).ToList();
+                var args = e.Args.Select(arg => runExp(arg)).ToArray();
 
-                for (int i = 0; i < func.Parameters.Length; i++) {
-                    var parameter = func.Parameters[i];
+                for (int i = 0; i < args.Length; i++) {
                     var arg = args[i];
-                    env_.Set(parameter.Name, arg);
+                    env_.Set("@"+(i+1), arg);
                 }
 
                 runBlock(func.Body);

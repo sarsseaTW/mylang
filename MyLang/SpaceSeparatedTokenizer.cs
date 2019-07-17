@@ -58,8 +58,8 @@ namespace MyLang
                     return new Token(TokenType.Print, str);
                 case "let":
                     return new Token(TokenType.Let, str);
-                case "function":
-                    return new Token(TokenType.Function, str);
+                case "def":
+                    return new Token(TokenType.Def, str);
                 case "return":
                     return new Token(TokenType.Return, str);
                 default:

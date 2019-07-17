@@ -57,6 +57,13 @@ namespace MyLang
 
         #endregion
 
+        public Ast.Ast ParseCalcurator(IList<Token> tokens)
+        {
+            tokens_ = tokens;
+            pos_ = 0;
+            return parseExp();
+        }
+
         public Ast.Ast Parse(IList<Token> tokens)
         {
             tokens_ = tokens;
@@ -86,7 +93,7 @@ namespace MyLang
             {
                 return parsePrintStatement();
             }
-            else if (t.Type == TokenType.Function)
+            else if (t.Type == TokenType.Def)
             {
                 return parseFunctionStatement();
             }
@@ -96,9 +103,7 @@ namespace MyLang
             }
             else
             {
-                throw new Exception("BUG");
                 return null;
-                //return parseExpStatement();
             }
         }
 
@@ -106,7 +111,7 @@ namespace MyLang
         {
             consume(TokenType.Let);
 
-            var variable = parseExp();
+            var variable = parseSymbol();
 
             consume(TokenType.Equal);
 
@@ -142,32 +147,15 @@ namespace MyLang
 
         Ast.Statement parseFunctionStatement()
         {
-            consume(TokenType.Function);
+            consume(TokenType.Def);
 
             var name = parseSymbol();
 
-            consume(TokenType.LParen);
-
-            var parameters = new List<Ast.Symbol>();
-            if( currentToken().Type != TokenType.RParen)
-            {
-                while (true)
-                {
-                    var arg = parseSymbol();
-                    parameters.Add(arg);
-                    if (currentToken().Type != TokenType.Comma)
-                    {
-                        break;
-                    }
-                    consume(TokenType.Comma);
-                }
-            }
-
-            consume(TokenType.RParen);
-
             var body = parseBlock();
 
-            return new Ast.FunctionStatement(name, parameters.ToArray(), body);
+            consume(TokenType.End);
+
+            return new Ast.FunctionStatement(name, body);
         }
 
         Ast.Symbol parseSymbol()
@@ -178,16 +166,16 @@ namespace MyLang
 
         Ast.Statement[] parseBlock()
         {
-            consume(TokenType.LBraket);
-
             var statements = new List<Ast.Statement>();
-            while( currentToken().Type != TokenType.RBraket)
+            while( true)
             {
                 var stat = parseStatement();
+                if( stat == null)
+                {
+                    break;
+                }
                 statements.Add(stat);
             }
-
-            consume(TokenType.RBraket);
 
             return statements.ToArray();
         }

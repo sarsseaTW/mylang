@@ -1,5 +1,5 @@
-function add(a, b){ 
-    return a+b; 
-}
+def add
+    return @1+@2; 
+end
 
-print add(1 ,2);
+print add(1 ,add(2,3));

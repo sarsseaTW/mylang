@@ -2,7 +2,7 @@ require 'pp'
 require 'fileutils'
 require 'open3'
 
-MY_LANG_EXE = "MyLang/bin/Debug/MyLang.exe"
+MY_LANG_EXE = "MyLang.exe"
 
 def run_test(testcases, cmd)
   total = 0
@@ -39,26 +39,26 @@ def test_tokenizer
     ["1 + 2", "1 + 2 [EOF]"],
     ["1   +   2", "1 + 2 [EOF]"],
     ["1   +  2 * 3", "1 + 2 * 3 [EOF]"],
-    #["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
-    #["a + b", "a + b [EOF]"], # Symbolも対応する
-    #["(1 + 2) * 3", "( 1 + 2 ) [EOF]"], # "(", ")" に対応する
+    ["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
+    ["a + b", "a + b [EOF]"], # Symbolも対応する
+    ["(1 + 2) * 3", "( 1 + 2 ) * 3 [EOF]"], # "(", ")" に対応する
   ]
   puts "** Testing Tokenizer ..."
-  run_test(testcases, [MY_LANG_EXE, '--tokenize'])
+  run_test(testcases, [MY_LANG_EXE, '--tokenize', '-c'])
 end
 
 
 def test_parser
   testcases = [
-    ["1", "1"],
-    ["1 + 2", "Add( 1 2 )"],
-    ["2 * 3", "Multiply( 2 3 )"],
-    ["1 + 2 * 3", "Add( 1 Multiply( 2 3 ) )"],
-    ["1 + 2 + 3", "Add( Add( 1 2 ) 3 )"],
-    ["1 * 2 * 3", "Multiply( Multiply( 1 2 ) 3 )"],
+    ["1;", "1"],
+    ["1 + 2;", "Add( 1 2 )"],
+    ["2 * 3;", "Multiply( 2 3 )"],
+    ["1 + 2 * 3;", "Add( 1 Multiply( 2 3 ) )"],
+    ["1 + 2 + 3;", "Add( Add( 1 2 ) 3 )"],
+    ["1 * 2 * 3;", "Multiply( Multiply( 1 2 ) 3 )"],
   ]
   puts "** Testing Parser ..."
-  run_test(testcases, [MY_LANG_EXE, '--parse'])
+  run_test(testcases, [MY_LANG_EXE, '--parse', '-c'])
 end
 
 def test_interpreter
@@ -71,7 +71,7 @@ def test_interpreter
     ["1 * 2 * 3", 6],
   ]
   puts "** Testing Interpreter ..."
-  run_test(testcases, [MY_LANG_EXE])
+  run_test(testcases, [MY_LANG_EXE, '-c'])
 end
 
 test_tokenizer

@@ -16,6 +16,7 @@ class Program
     {
         bool tokenizeOnly = false; // tokenize だけで終わるかどうか
         bool parseOnly = false; // parse だけで終わるかどうか
+        bool runAsCalcurator = false; // 計算機として動く
         string src = null; // 直接実行するソース
 
         // 引数をparseする
@@ -42,6 +43,12 @@ class Program
                     Logger.LogEnabled = true;
                     break;
                 case "-e":
+                    src = args[i + 1];
+                    i++;
+                    break;
+                case "-c":
+                case "--calc":
+                    runAsCalcurator = true;
                     src = args[i + 1];
                     i++;
                     break;
@@ -78,11 +85,19 @@ class Program
         }
 
         // Parse を行う
-        var ast = parser.Parse(tokens);
-
-        if( parseOnly)
+        MyLang.Ast.Ast ast;
+        if (runAsCalcurator)
         {
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, true));
+            ast = parser.ParseCalcurator(tokens);
+        }
+        else
+        {
+            ast = parser.Parse(tokens);
+        }
+
+        if ( parseOnly)
+        {
+            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
             exit(0);
         }
 

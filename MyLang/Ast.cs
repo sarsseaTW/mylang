@@ -142,9 +142,9 @@ namespace MyLang
 
         public class AssignStatement : Statement
         {
-            public readonly Exp Variable;
+            public readonly Symbol Variable;
             public readonly Exp Exp;
-            public AssignStatement(Exp variable, Exp exp)
+            public AssignStatement(Symbol variable, Exp exp)
             {
                 Variable = variable;
                 Exp = exp;
@@ -186,17 +186,15 @@ namespace MyLang
         public class FunctionStatement : Statement
         {
             public readonly Symbol Name;
-            public readonly Symbol[] Parameters;
             public readonly Statement[] Body;
-            public FunctionStatement(Symbol name, IList<Symbol> parameters, IList<Statement> body)
+            public FunctionStatement(Symbol name, IList<Statement> body)
             {
                 Name = name;
-                Parameters = parameters.ToArray();
                 Body = body.ToArray();
             }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create("function", new Ast[] { Name, new AstList(Parameters), new AstList(Body) });
+                return Tuple.Create("def", new Ast[] { Name, new AstList(Body) });
             }
         }
 
