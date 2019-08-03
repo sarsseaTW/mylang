@@ -126,6 +126,40 @@ namespace MyLang
         {
             var c = src_[pos_];
             pos_++;
+
+            // ２文字以上になる可能性のある記号を扱う
+            switch ( c)
+            {
+                case '<':
+                case '>':
+                case '!':
+                case '=':
+                    if (pos_ < src_.Length)
+                    {
+                        var c2 = src_[pos_];
+                        if (c == '<' && c2 == '=')
+                        {
+                            pos_++;
+                        }
+                        else if (c == '>' && c2 == '=')
+                        {
+                            pos_++;
+                        }
+                        else if (c == '=' && c2 == '=')
+                        {
+                            pos_++;
+                        }
+                        else if (c == '!' && c2 == '=')
+                        {
+                            pos_++;
+                        }
+                    }
+                    break;
+                default:
+                    // １文字の記号
+                    break;
+            }
+
             tokens_.Add(Token.FromString(src_.Substring(start_, pos_ - start_)));
         }
 

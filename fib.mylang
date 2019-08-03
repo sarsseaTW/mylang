@@ -2,8 +2,8 @@ function fib {
   if @1 <= 2 {
       return 1;
   }else{
-      return fib(@1-1) + fib(@2-1);
+      return fib(@1-1) + fib(@1-1);
   }
 }
 
-print fib(10)
+print fib(10);

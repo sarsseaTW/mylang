@@ -16,7 +16,8 @@ def run_test(test_name, testcases, cmd)
     output.strip!
 
     if status.exitstatus != 0
-      puts "ERROR: #{input}"
+      puts "ERROR: #{input} fail"
+      puts output
       next
     end
     
@@ -50,6 +51,7 @@ def test_tokenizer
     ["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
     ["a + b", "a + b [EOF]"], # Symbolも対応する
     ["(1 + 2) * 3", "( 1 + 2 ) * 3 [EOF]"], # "(", ")" に対応する
+    ["< <= >= == !=", "< <= >= == != [EOF]"],
   ]
   run_test("Tokenizer", testcases, [MY_LANG_EXE, '--tokenize', '-c'])
 end

@@ -17,6 +17,12 @@ namespace MyLang
             {TokenType.Minus, Ast.BinOpType.Sub },
             {TokenType.Star, Ast.BinOpType.Multiply },
             {TokenType.Slash, Ast.BinOpType.Divide },
+            {TokenType.EqualEqual, Ast.BinOpType.Equal },
+            {TokenType.NotEqual, Ast.BinOpType.NotEqual },
+            {TokenType.Less, Ast.BinOpType.Less },
+            {TokenType.LessEqual, Ast.BinOpType.LessEqual },
+            {TokenType.Greater, Ast.BinOpType.Greater },
+            {TokenType.GreaterEqual, Ast.BinOpType.GreaterEqual },
         };
 
         public Parser()
@@ -101,6 +107,18 @@ namespace MyLang
             {
                 return parseReturnStatement();
             }
+            else if (t.Type == TokenType.Loop)
+            {
+                return parseLoopStatement();
+            }
+            else if (t.Type == TokenType.If)
+            {
+                return parseIfStatement();
+            }
+            else if (t.Type == TokenType.Break)
+            {
+                return parseBreakStatement();
+            }
             else
             {
                 return null;
@@ -160,6 +178,55 @@ namespace MyLang
             return new Ast.FunctionStatement(name, body);
         }
 
+        Ast.Statement parseIfStatement()
+        {
+            consume(TokenType.If);
+
+            var exp = parseExp();
+
+            consume(TokenType.LBraket);
+
+            var thenBody = parseBlock();
+
+            consume(TokenType.RBraket);
+
+            Ast.Statement[] elseBody = null;
+            if( currentToken().Type == TokenType.Else)
+            {
+                consume(TokenType.Else);
+
+                consume(TokenType.LBraket);
+
+                elseBody = parseBlock();
+
+                consume(TokenType.RBraket);
+            }
+
+            return new Ast.IfStatement(exp, thenBody, elseBody);
+        }
+
+        Ast.Statement parseLoopStatement()
+        {
+            consume(TokenType.Loop);
+
+            consume(TokenType.LBraket);
+
+            var body = parseBlock();
+
+            consume(TokenType.RBraket);
+
+            return new Ast.LoopStatement(body);
+        }
+
+        Ast.Statement parseBreakStatement()
+        {
+            consume(TokenType.Break);
+
+            consume(TokenType.Semicolon);
+
+            return new Ast.BreakStatement();
+        }
+
         Ast.Symbol parseSymbol()
         {
             var t = consume(TokenType.Symbol);
@@ -188,7 +255,46 @@ namespace MyLang
 
         Ast.Exp parseExp()
         {
-            return parseExp1();
+            return parseExp0();
+        }
+
+        Ast.Exp parseExp0()
+        {
+            var lhs = parseExp1();
+            if (lhs == null)
+            {
+                return null;
+            }
+
+            return parseExp0Rest(lhs);
+        }
+
+        /// <summary>
+        /// 左結合のために、Exp1を分割したもの
+        /// </summary>
+        /// <param name="lhs">パース済みの左辺項</param>
+        Ast.Exp parseExp0Rest(Ast.Exp lhs)
+        {
+            var t = currentToken();
+            if (t.Type == TokenType.Less || t.Type == TokenType.LessEqual || t.Type == TokenType.Greater || t.Type == TokenType.GreaterEqual)
+            {
+                var binopType = BinOpMap[t.Type];
+                progress();
+
+                var rhs = parseExp1();
+                if (rhs == null)
+                {
+                    throw new Exception("No rhs parsed");
+                }
+
+                var exp = new Ast.BinOp(binopType, lhs, rhs);
+
+                return parseExp0Rest(exp);
+            }
+            else
+            {
+                return lhs;
+            }
         }
 
         Ast.Exp parseExp1()

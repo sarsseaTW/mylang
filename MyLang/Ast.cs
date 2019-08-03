@@ -38,6 +38,13 @@ namespace MyLang
             Sub, // -
             Multiply, // *
             Divide, // /
+
+            Equal, // ==
+            NotEqual, // !=
+            Less, // <
+            LessEqual, // <=
+            Greater, // >
+            GreaterEqual, // >=
         }
 
         /// <summary>
@@ -195,6 +202,50 @@ namespace MyLang
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
                 return Tuple.Create("function", new Ast[] { Name, new AstList(Body) });
+            }
+        }
+
+        public class IfStatement : Statement
+        {
+            public readonly Exp Exp;
+            public readonly Statement[] ThenBody;
+            public readonly Statement[] ElseBody;
+            public IfStatement(Exp exp, IEnumerable<Statement> thenBody, IEnumerable<Statement> elseBody)
+            {
+                Exp = exp;
+                ThenBody = thenBody.ToArray();
+                if (elseBody != null)
+                {
+                    ElseBody = elseBody.ToArray();
+                }
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("if", new Ast[] { Exp, new AstList(ThenBody), new AstList(ElseBody) });
+            }
+        }
+
+        public class LoopStatement : Statement
+        {
+            public readonly Statement[] Body;
+            public LoopStatement(IList<Statement> body)
+            {
+                Body = body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("loop", new Ast[] { new AstList(Body) });
+            }
+        }
+
+        public class BreakStatement : Statement
+        {
+            public BreakStatement()
+            {
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("break", new Ast[] {});
             }
         }
 

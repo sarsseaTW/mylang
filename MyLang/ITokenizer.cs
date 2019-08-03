@@ -28,12 +28,20 @@ namespace MyLang
         LBraket, // "{"
         RBraket, // "}"
 
+        EqualEqual, // "=="
+        NotEqual, // "!="
+        Less, // "<"
+        LessEqual, // "<="
+        Greater, // ">"
+        GreaterEqual, // ">="
+
         Let, 
         Print,
         Function,
         End,
         Return,
         If,
+        Else,
         Loop,
         Break,
     }
@@ -70,12 +78,21 @@ namespace MyLang
             { "{", TokenType.LBraket },
             { "}", TokenType.RBraket },
             { ",", TokenType.Comma },
+
+            { "==", TokenType.EqualEqual },
+            { "!=", TokenType.NotEqual },
+            { "<", TokenType.Less },
+            { "<=", TokenType.LessEqual },
+            { ">", TokenType.Greater },
+            { ">=", TokenType.GreaterEqual },
+
             { "print", TokenType.Print },
             { "let", TokenType.Let },
             { "function", TokenType.Function },
             { "end", TokenType.End },
             { "return", TokenType.Return },
             { "if", TokenType.If },
+            { "else", TokenType.Else },
             { "loop", TokenType.Loop },
             { "break", TokenType.Break },
         };

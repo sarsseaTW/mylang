@@ -51,6 +51,10 @@ namespace MyLang
 
     public class Interpreter
     {
+        public class InterpreterJump : Exception { }
+        public class BreakJump : InterpreterJump { }
+        public class ReturnJump : InterpreterJump { }
+
         Env env_ = new Env();
 
         public Interpreter()
@@ -95,6 +99,44 @@ namespace MyLang
                     var s = (ReturnStatement)stat;
                     float value = runExp(s.Exp);
                     env_.SetReturnValue(value);
+                    throw new ReturnJump();
+                }
+                else if (stat is IfStatement)
+                {
+                    var s = (IfStatement)stat;
+                    float value = runExp(s.Exp);
+                    if( value != 0)
+                    {
+                        runBlock(s.ThenBody);
+                    }
+                    else
+                    {
+                        if (s.ElseBody != null)
+                        {
+                            runBlock(s.ElseBody);
+                        }
+                    }
+                }
+                else if (stat is LoopStatement)
+                {
+                    var s = (LoopStatement)stat;
+                    while (true)
+                    {
+                        try
+                        {
+                            runBlock(s.Body);
+                        }
+                        catch (BreakJump)
+                        {
+                            // break によって終了する
+                            break;
+                        }
+                    }
+                }
+                else if (stat is BreakStatement)
+                {
+                    var s = (BreakStatement)stat;
+                    throw new BreakJump();
                 }
                 else
                 {
@@ -118,8 +160,20 @@ namespace MyLang
                         return lhsValue - rhsValue;
                     case BinOpType.Multiply:
                         return lhsValue * rhsValue;
-                    case BinOpType.Divide:                        ;
+                    case BinOpType.Divide:
                         return lhsValue / rhsValue;
+                    case BinOpType.Equal:
+                        return (lhsValue == rhsValue) ? 1: 0;
+                    case BinOpType.NotEqual:
+                        return (lhsValue != rhsValue) ? 1 : 0;
+                    case BinOpType.Less:
+                        return (lhsValue < rhsValue) ? 1 : 0;
+                    case BinOpType.LessEqual:
+                        return (lhsValue <= rhsValue) ? 1 : 0;
+                    case BinOpType.Greater:
+                        return (lhsValue > rhsValue) ? 1 : 0;
+                    case BinOpType.GreaterEqual:
+                        return (lhsValue >= rhsValue) ? 1 : 0;
                     default:
                         throw new Exception($"Unkonwn operator {binop.Operator}");
                 }
@@ -145,7 +199,14 @@ namespace MyLang
                     env_.Set("@"+(i+1), arg);
                 }
 
-                runBlock(func.Body);
+                try
+                {
+                    runBlock(func.Body);
+                }
+                catch (ReturnJump)
+                {
+                    // return によって終了する
+                }
 
                 return env_.GetReturnValue();
             }
