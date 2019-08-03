@@ -49,7 +49,7 @@ namespace MyLang
                 }
             }
 
-            tokens_.Add(new Token(TokenType.Terminate, "[EOF]"));
+            tokens_.Add(Token.CreateTerminator());
             return tokens_;
         }
 
@@ -112,7 +112,7 @@ namespace MyLang
                 pos_++;
             }
             var str = src_.Substring(start_, pos_ - start_);
-            var token = strToToken(str, false);
+            var token = Token.FromString(str, false);
             if (token != null)
             {
                 tokens_.Add(token);
@@ -126,47 +126,8 @@ namespace MyLang
         {
             var c = src_[pos_];
             pos_++;
-            tokens_.Add(strToToken(src_.Substring(start_, pos_ - start_)));
+            tokens_.Add(Token.FromString(src_.Substring(start_, pos_ - start_)));
         }
 
-        static Dictionary<string, TokenType> strToTokenDict = new Dictionary<string, TokenType>()
-        {
-            { "+", TokenType.Plus },
-            { "-", TokenType.Minus },
-            { "*", TokenType.Star },
-            { "/", TokenType.Slash },
-            { ";", TokenType.Semicolon },
-            { "=", TokenType.Equal },
-            { "(", TokenType.LParen },
-            { ")", TokenType.RParen },
-            { "{", TokenType.LBraket },
-            { "}", TokenType.RBraket },
-            { ",", TokenType.Comma },
-            { "print", TokenType.Print },
-            { "let", TokenType.Let },
-            { "function", TokenType.Function },
-            { "end", TokenType.End },
-            { "return", TokenType.Return },
-        };
-
-        Token strToToken(string str, bool errorIfNotFound = true)
-        {
-            TokenType tt;
-            if (strToTokenDict.TryGetValue(str, out tt))
-            {
-                return new Token(tt, str);
-            }
-            else
-            {
-                if (errorIfNotFound)
-                {
-                    throw new Exception($"Invalid token {str}");
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
     }
 }

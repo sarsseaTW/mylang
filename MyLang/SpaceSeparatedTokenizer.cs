@@ -25,56 +25,30 @@ namespace MyLang
         public IList<Token> Tokenize(string src)
         {
             var tokenStrs = sepratorPattern.Split(src).Where(s=>s!="");
-            return tokenStrs.Select(str => strToToken(str)).Concat(new[] { new Token(TokenType.Terminate, "[EOF]")}).ToArray();
+            return tokenStrs.Select(str => strToToken(str)).Concat(new[] { Token.CreateTerminator() }).ToArray();
         }
 
         Token strToToken(string str)
         {
-            switch( str)
+            var token = Token.FromString(str, false);
+            if( token != null)
             {
-                case "+":
-                    return new Token(TokenType.Plus, str);
-                case "-":
-                    return new Token(TokenType.Minus, str);
-                case "*":
-                    return new Token(TokenType.Star, str);
-                case "/":
-                    return new Token(TokenType.Slash, str);
-                case ";":
-                    return new Token(TokenType.Semicolon, str);
-                case "=":
-                    return new Token(TokenType.Equal, str);
-                case "(":
-                    return new Token(TokenType.LParen, str);
-                case ")":
-                    return new Token(TokenType.RParen, str);
-                case ",":
-                    return new Token(TokenType.Comma, str);
-                case "{":
-                    return new Token(TokenType.LBraket, str);
-                case "}":
-                    return new Token(TokenType.RBraket, str);
-                case "print":
-                    return new Token(TokenType.Print, str);
-                case "let":
-                    return new Token(TokenType.Let, str);
-                case "function":
-                    return new Token(TokenType.Function, str);
-                case "return":
-                    return new Token(TokenType.Return, str);
-                default:
-                    if(numberPattern.IsMatch(str))
-                    {
-                        return new Token(TokenType.Number, str);
-                    }
-                    else if (symbolPattern.IsMatch(str))
-                    {
-                        return new Token(TokenType.Symbol, str);
-                    }
-                    else
-                    {
-                        throw new Exception($"Invalid token {str}");
-                    }
+                return token;
+            }
+            else
+            {
+                if (numberPattern.IsMatch(str))
+                {
+                    return new Token(TokenType.Number, str);
+                }
+                else if (symbolPattern.IsMatch(str))
+                {
+                    return new Token(TokenType.Symbol, str);
+                }
+                else
+                {
+                    throw new Exception($"Invalid token {str}");
+                }
             }
         }
     }

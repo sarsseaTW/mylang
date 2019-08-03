@@ -28,11 +28,14 @@ namespace MyLang
         LBraket, // "{"
         RBraket, // "}"
 
-        Let, // "let"
-        Print, // "print"
-        Function, // "function"
-        End, // "end"
-        Return, // "return"
+        Let, 
+        Print,
+        Function,
+        End,
+        Return,
+        If,
+        Loop,
+        Break,
     }
 
     /// <summary>
@@ -53,6 +56,62 @@ namespace MyLang
         public bool IsNumber => (Type == TokenType.Number);
         public bool IsSymbol => (Type == TokenType.Symbol);
         public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus || Type == TokenType.Star || Type == TokenType.Slash);
+
+        static Dictionary<string, TokenType> strToTokenDict = new Dictionary<string, TokenType>()
+        {
+            { "+", TokenType.Plus },
+            { "-", TokenType.Minus },
+            { "*", TokenType.Star },
+            { "/", TokenType.Slash },
+            { ";", TokenType.Semicolon },
+            { "=", TokenType.Equal },
+            { "(", TokenType.LParen },
+            { ")", TokenType.RParen },
+            { "{", TokenType.LBraket },
+            { "}", TokenType.RBraket },
+            { ",", TokenType.Comma },
+            { "print", TokenType.Print },
+            { "let", TokenType.Let },
+            { "function", TokenType.Function },
+            { "end", TokenType.End },
+            { "return", TokenType.Return },
+            { "if", TokenType.If },
+            { "loop", TokenType.Loop },
+            { "break", TokenType.Break },
+        };
+
+        /// <summary>
+        /// stringをTokenに変換する
+        /// </summary>
+        /// <param name="str">対象の文字列</param>
+        /// <param name="errorIfNotFound">trueなら、変換できないときに例外を投げる</param>
+        /// <returns></returns>
+        public static Token FromString(string str, bool errorIfNotFound = true)
+        {
+            TokenType tt;
+            if (strToTokenDict.TryGetValue(str, out tt))
+            {
+                return new Token(tt, str);
+            }
+            else
+            {
+                if (errorIfNotFound)
+                {
+                    throw new Exception($"Invalid token {str}");
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public static Token CreateTerminator()
+        {
+            return new Token(TokenType.Terminate, "[EOF]");
+        }
+
+
     }
 
     public interface ITokenizer
