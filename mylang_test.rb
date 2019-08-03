@@ -1,10 +1,12 @@
 require 'pp'
 require 'fileutils'
 require 'open3'
+require 'optparse'
 
 MY_LANG_EXE = "MyLang.exe"
 
-def run_test(testcases, cmd)
+def run_test(test_name, testcases, cmd)
+  puts "** Testing #{test_name} ..." if $verbose
   total = 0
   success = 0
 
@@ -22,14 +24,20 @@ def run_test(testcases, cmd)
       puts "NG: #{input} => #{output}, but expect #{expected_output}"
     else
       success += 1
-      puts "OK: #{input} => #{output}"
+      if $verbose
+        puts "OK: #{input} => #{output}" 
+      else
+        print "."
+      end
     end
   end
+
+  puts unless $verbose
+
   if total == success
-    puts "OK: #{total} testcases passed"
+    puts "OK: #{total} testcases passed" if $verbose
   else
     puts "ERR: #{total-success} testcases failed"
-    raise
   end
 end
 
@@ -43,8 +51,7 @@ def test_tokenizer
     ["a + b", "a + b [EOF]"], # Symbolも対応する
     ["(1 + 2) * 3", "( 1 + 2 ) * 3 [EOF]"], # "(", ")" に対応する
   ]
-  puts "** Testing Tokenizer ..."
-  run_test(testcases, [MY_LANG_EXE, '--tokenize', '-c'])
+  run_test("Tokenizer", testcases, [MY_LANG_EXE, '--tokenize', '-c'])
 end
 
 
@@ -57,8 +64,7 @@ def test_parser
     ["1 + 2 + 3;", "Add( Add( 1 2 ) 3 )"],
     ["1 * 2 * 3;", "Multiply( Multiply( 1 2 ) 3 )"],
   ]
-  puts "** Testing Parser ..."
-  run_test(testcases, [MY_LANG_EXE, '--parse', '-c'])
+  run_test("Parser", testcases, [MY_LANG_EXE, '--parse', '-c'])
 end
 
 def test_interpreter
@@ -70,9 +76,11 @@ def test_interpreter
     ["1 + 2 + 3", 6],
     ["1 * 2 * 3", 6],
   ]
-  puts "** Testing Interpreter ..."
-  run_test(testcases, [MY_LANG_EXE, '-c'])
+  run_test("Interpreter", testcases, [MY_LANG_EXE, '-c'])
 end
+
+op = OptionParser.new
+op.on('v','--verbose','show log'){|v| $verbose = true }
 
 test_tokenizer
 test_parser
