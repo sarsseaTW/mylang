@@ -144,11 +144,19 @@ namespace MyLang
         {
             consume(TokenType.Print);
 
+            var t = currentToken();
+            string format = null;
+            if(t.Type == TokenType.String)
+            {
+                consume(TokenType.String);
+                format = t.Text;
+            }
+
             var exp = parseExp();
 
             consume(TokenType.Semicolon);
 
-            return new Ast.PrintStatement(exp);
+            return new Ast.PrintStatement(format, exp);
         }
 
         Ast.Statement parseReturnStatement()

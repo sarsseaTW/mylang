@@ -97,7 +97,14 @@ namespace MyLang
                 if (stat is PrintStatement) {
                     var s = (PrintStatement)stat;
                     float value = runExp(s.Exp);
-                    Console.WriteLine(value);
+                    if (s.Format != null)
+                    {
+                        Console.WriteLine(s.Format, value);
+                    }
+                    else
+                    {
+                        Console.WriteLine(value);
+                    }
                 }
                 else if( stat is AssignStatement)
                 {

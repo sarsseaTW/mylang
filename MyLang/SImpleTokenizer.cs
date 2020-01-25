@@ -43,6 +43,10 @@ namespace MyLang
                 {
                     lexSymbolOrKeyword();
                 }
+                else if (c == '"')
+                {
+                    lexString();
+                }
                 else
                 {
                     lexOperator();
@@ -161,6 +165,27 @@ namespace MyLang
             }
 
             tokens_.Add(Token.FromString(src_.Substring(start_, pos_ - start_)));
+        }
+
+        void lexString()
+        {
+            pos_++; // '"' を読み飛ばす
+
+            var sb = new StringBuilder();
+            for (; ; )
+            {
+                var c = src_[pos_++];
+                if( c == '"')
+                {
+                    break;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            tokens_.Add(new Token(TokenType.String, sb.ToString()));
         }
 
     }

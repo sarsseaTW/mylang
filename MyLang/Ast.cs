@@ -167,13 +167,15 @@ namespace MyLang
         public class PrintStatement : Statement
         {
             public readonly Exp Exp;
-            public PrintStatement(Exp exp)
+            public readonly string Format;
+            public PrintStatement(string format, Exp exp)
             {
+                Format = format;
                 Exp = exp;
             }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create("print", new Ast[] { Exp });
+                return Tuple.Create("print " + Format, new Ast[] { Exp });
             }
         }
 

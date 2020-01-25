@@ -15,6 +15,7 @@ namespace MyLang
 
         Number, // 数値
         Symbol, // 識別子
+        String, // 文字列
 
         Plus, // "+"
         Minus, // "-"
