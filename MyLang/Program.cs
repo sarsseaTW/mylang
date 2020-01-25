@@ -59,7 +59,7 @@ class Program
         }
 
         // 各実行器を用意する
-        ITokenizer tokenizer = new SimpleTokenizer();
+        var tokenizer = new SimpleTokenizer();
         var parser = new Parser();
         var interpreter = new Interpreter();
 
@@ -97,7 +97,7 @@ class Program
 
         if ( parseOnly)
         {
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
+            Console.WriteLine(new MyLang.AstDisplayer().BuildString(ast, false));
             exit(0);
         }
 

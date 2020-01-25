@@ -11,7 +11,7 @@ namespace MyLang
     /// 
     /// トークンは、必ず一つ以上のスペースで区切られている必要がある
     /// </summary>
-    class SimpleTokenizer : ITokenizer
+    class SimpleTokenizer
     {
         string src_;
         int pos_;

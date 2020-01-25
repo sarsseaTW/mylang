@@ -131,14 +131,4 @@ namespace MyLang
 
 
     }
-
-    public interface ITokenizer
-    {
-        /// <summary>
-        /// ソースコードをトークンに分割する
-        /// </summary>
-        /// <param name="src">ソースコード</param>
-        /// <returns>トークンのリスト</returns>
-        IList<Token> Tokenize(string src);
-    }
 }
