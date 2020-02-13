@@ -20,6 +20,10 @@ namespace MyLang
         Minus, // "-"
         Star, // "*"
         Slash, // "/"
+        Left_parenthesis, // "("
+        Right_parenthesis, // ")"
+        Space, // " "
+
     }
 
     /// <summary>
@@ -38,7 +42,10 @@ namespace MyLang
 
         public bool IsNumber => (Type == TokenType.Number);
         public bool IsSymbol => (Type == TokenType.Symbol);
-        public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus || Type == TokenType.Star || Type == TokenType.Slash);
+        public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus 
+            || Type == TokenType.Star || Type == TokenType.Slash
+            || Type == TokenType.Left_parenthesis || Type == TokenType.Right_parenthesis
+            || Type == TokenType.Space);
     }
 
     public interface ITokenizer

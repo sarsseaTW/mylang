@@ -14,6 +14,7 @@ namespace MyLang
         public float Run(Ast.Ast ast)
         {
             // TODO: 仮のダミー実装
+            Console.WriteLine("testtest");
             return 0;
         }
 

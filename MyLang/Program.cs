@@ -18,6 +18,8 @@ class Program
 
         // 引数をparseする
         var rest = new List<string>();
+
+        Console.WriteLine("arg");
         for (int i = 0; i < args.Length; i++)
         {
             var arg = args[i];
@@ -41,12 +43,15 @@ class Program
                     break;
                 default:
                     rest.Add(arg);
+                    Console.WriteLine(arg + "\n");
                     break;
             }
         }
+        Console.WriteLine("rest");
+        Console.WriteLine(rest[0] + " \n");
 
         // 引数がないなら、ヘルプを表示して終わる
-        if( rest.Count <= 0)
+        if ( rest.Count <= 0)
         {
             showHelpAndExit();
         }
