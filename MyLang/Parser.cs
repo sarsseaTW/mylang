@@ -54,9 +54,84 @@ namespace MyLang
             var lhs = new Ast.Number(555);
             var rhs = new Ast.Number(2159);
             var ast = new Ast.BinOp(Ast.BinOpType.Sub, lhs, rhs);
+            exp1();
 
+            Console.WriteLine("tokenPos");
+            for (int i = 0; i < tokens_.LongCount();i++)
+            {
+                Console.WriteLine(tokens_[i].Text);
+            }
+            Console.WriteLine("\ntokenCount");
+            Console.WriteLine(tokens_.LongCount());
             return ast;
         }
-        
+        Ast.Exp exp1()
+        {
+            var left_hs = exp2();
+            return exp1_realArea(left_hs);
+        }
+        Ast.Exp exp1_realArea(Ast.Exp left_hs)
+        {
+            var tokenPos = currentToken();
+            if (tokenPos.Type == TokenType.Plus || tokenPos.Type == TokenType.Minus)
+            {
+                var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
+                Console.WriteLine(now_tokenBioMap.ToString() + "        exp1_realArea ");
+                progress();
+                var right_hs = exp2();
+                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1+4+8-82+5
+                return exp1_realArea(exp);
+            }
+            else
+            {
+                return left_hs;
+            }
+        }
+        Ast.Exp exp2()
+        {
+            var left_hs = expVal();
+            return exp2_realArea(left_hs);
+        }
+        Ast.Exp exp2_realArea(Ast.Exp left_hs)
+        {
+            var tokenPos = currentToken();
+            if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
+            {
+                var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
+                Console.WriteLine(now_tokenBioMap.ToString() + "        exp2_realArea ");
+                progress();
+                var right_hs = exp2();
+                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
+                return exp2_realArea(exp);
+            }
+            else
+            {
+                return left_hs;
+            }
+        }
+        Ast.Exp expVal()
+        {
+            var tokenPos = currentToken();
+            //var tokenPos = tokens_[14];
+            if (tokenPos.IsNumber)
+            {
+                progress();
+
+                Console.WriteLine("\nIsNumber tokenPos.ToString");
+                Console.WriteLine(tokenPos.Text + "\n");
+
+                return new Ast.Number(float.Parse(tokenPos.Text));
+            }
+            else if (tokenPos.IsSymbol)
+            {
+                progress();
+
+                Console.WriteLine("\nIsSymbol tokenPos.ToString");
+                Console.WriteLine(tokenPos.Text + "\n");
+
+                return new Ast.Symbol(tokenPos.Text);
+            }
+            return null;
+        }
     }
 }

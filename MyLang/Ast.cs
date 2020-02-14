@@ -75,7 +75,22 @@ namespace MyLang
                 return Tuple.Create(Value.ToString(), (Ast[])null);
             }
         }
+        /// <summary>
+        /// Symbolを表すAST
+        /// </summary>
+        public class Symbol : Exp
+        {
+            public readonly string Value;
+            public Symbol(string value)
+            {
+                Value = value;
+            }
 
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Value.ToString(), (Ast[])null);
+            }
+        }
         /// <summary>
         /// ASTを文字列表現に変換するクラス
         /// </summary>
