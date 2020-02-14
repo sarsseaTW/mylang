@@ -69,7 +69,6 @@ class Program
             Console.WriteLine(string.Join(" ", tokens.Select(t => t.Text).ToArray()));
             exit(0);
         }
-
         // Parse を行う
         var ast = parser.Parse(tokens);
 

@@ -13,15 +13,17 @@ namespace MyLang
 
         static Dictionary<TokenType, Ast.BinOpType> BinOpMap = new Dictionary<TokenType, Ast.BinOpType>
         {
-            {TokenType.Plus, Ast.BinOpType.Add },
-            {TokenType.Minus, Ast.BinOpType.Sub },
-            {TokenType.Star, Ast.BinOpType.Multiply },
-            {TokenType.Slash, Ast.BinOpType.Divide },
+            {TokenType.Plus, Ast.BinOpType.Add }, // '+'
+            {TokenType.Minus, Ast.BinOpType.Sub }, // '-'
+            {TokenType.Star, Ast.BinOpType.Multiply }, // '*'
+            {TokenType.Slash, Ast.BinOpType.Divide },  // '/'
+
         };
 
-        public Parser()
+        public Parser(string str)
         {
-
+            tokens_ = str;
+            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()));
         }
 
         /// <summary>
