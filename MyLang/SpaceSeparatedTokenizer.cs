@@ -114,6 +114,7 @@ namespace MyLang
 
 
             Console.WriteLine("Token");
+            Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");
             return dummy;
         }
 

@@ -20,10 +20,8 @@ namespace MyLang
 
         };
 
-        public Parser(string str)
+        public Parser()
         {
-            tokens_ = str;
-            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()));
         }
 
         /// <summary>
@@ -49,12 +47,16 @@ namespace MyLang
             tokens_ = tokens;
             pos_ = 0;
 
+            Console.WriteLine("Ast.Ast Parse ");
+            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             // TODO: 仮のダミー実装
-            var lhs = new Ast.Number(1);
-            var rhs = new Ast.Number(2);
-            var ast = new Ast.BinOp(Ast.BinOpType.Add, lhs, rhs);
+            
+            var lhs = new Ast.Number(555);
+            var rhs = new Ast.Number(2159);
+            var ast = new Ast.BinOp(Ast.BinOpType.Sub, lhs, rhs);
 
             return ast;
         }
+        
     }
 }
