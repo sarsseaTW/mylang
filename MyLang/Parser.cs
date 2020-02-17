@@ -46,24 +46,21 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-
             Console.WriteLine("Ast.Ast Parse ");
             Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             // TODO: 仮のダミー実装
-            
-            var lhs = new Ast.Number(555);
-            var rhs = new Ast.Number(2159);
-            var ast = new Ast.BinOp(Ast.BinOpType.Sub, lhs, rhs);
-            exp1();
 
+            //var lhs = new Ast.Number(555);
+            //var rhs = new Ast.Number(2159);
+            //var ast = new Ast.BinOp(Ast.BinOpType.Sub, lhs, rhs);
             Console.WriteLine("tokenPos");
-            for (int i = 0; i < tokens_.LongCount();i++)
+            for (int i = 0; i < tokens_.LongCount(); i++)
             {
                 Console.WriteLine(tokens_[i].Text);
             }
             Console.WriteLine("\ntokenCount");
             Console.WriteLine(tokens_.LongCount());
-            return ast;
+            return exp1();
         }
         Ast.Exp exp1()
         {
@@ -95,12 +92,16 @@ namespace MyLang
         Ast.Exp exp2_realArea(Ast.Exp left_hs)
         {
             var tokenPos = currentToken();
+            if (tokenPos.IsNumber || tokenPos.IsSymbol) //有錯誤 單位數可以，雙位數以上 會BOOM
+            {
+                exp2();
+            }
             if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
                 Console.WriteLine(now_tokenBioMap.ToString() + "        exp2_realArea ");
                 progress();
-                var right_hs = exp2();
+                var right_hs = expVal();
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
                 return exp2_realArea(exp);
             }
@@ -116,9 +117,8 @@ namespace MyLang
             if (tokenPos.IsNumber)
             {
                 progress();
-
-                Console.WriteLine("\nIsNumber tokenPos.ToString");
-                Console.WriteLine(tokenPos.Text + "\n");
+                
+                Console.WriteLine("\n" + tokenPos.Text + "            IsNumber tokenPos.ToString\n");
 
                 return new Ast.Number(float.Parse(tokenPos.Text));
             }
@@ -126,12 +126,11 @@ namespace MyLang
             {
                 progress();
 
-                Console.WriteLine("\nIsSymbol tokenPos.ToString");
-                Console.WriteLine(tokenPos.Text + "\n");
+                Console.WriteLine("\n" + tokenPos.Text + "            IsSymbol tokenPos.ToString\n");
 
                 return new Ast.Symbol(tokenPos.Text);
             }
-            return null;
+            return new Ast.Symbol(tokenPos.Text);
         }
     }
 }
