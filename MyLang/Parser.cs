@@ -92,7 +92,7 @@ namespace MyLang
         Ast.Exp exp2_realArea(Ast.Exp left_hs)
         {
             var tokenPos = currentToken();
-            if (tokenPos.IsNumber || tokenPos.IsSymbol) //有錯誤 單位數可以，雙位數以上 會BOOM
+            if (tokenPos.IsNumber || tokenPos.IsSymbol) 
             {
                 exp2();
             }

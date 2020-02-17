@@ -17,8 +17,8 @@ namespace MyLang
 
 
             Console.WriteLine("Interpreter.Run");// *-- ast.ToString() => BinOp;
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
-            return 0;
+            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, true));
+            return Run_exp();
         }
         float Run_exp(Exp exp)
         {
