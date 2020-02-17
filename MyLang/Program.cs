@@ -82,6 +82,9 @@ class Program
         var result = interpreter.Run(ast);
 
         // 答えを出力する
+        Console.WriteLine("----------------------------------------------------------------");
+
+        Console.WriteLine("答えを出力する");
         Console.WriteLine(result);
 
         exit(0);

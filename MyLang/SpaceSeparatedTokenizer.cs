@@ -93,8 +93,8 @@ namespace MyLang
                 {
                     if (eng_isStr)
                     {
-                        Console.WriteLine("sum_eng");
-                        Console.WriteLine(sum_eng + " \n");
+                        //Console.WriteLine("sum_eng");
+                        //Console.WriteLine(sum_eng + " \n");
                         dummy.Add(new Token(TokenType.Symbol, sum_eng.ToString()));
                         sum_eng = "";
                     }
@@ -110,8 +110,8 @@ namespace MyLang
                 {
                     if (int_isStr)
                     {
-                        Console.WriteLine("sum_int");
-                        Console.WriteLine(sum_int + " \n");
+                        //Console.WriteLine("sum_int");
+                        //Console.WriteLine(sum_int + " \n");
                         dummy.Add(new Token(TokenType.Number, sum_int.ToString()));
                         sum_int = "";
                     }
