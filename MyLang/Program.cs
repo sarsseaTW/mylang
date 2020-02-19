@@ -70,11 +70,11 @@ class Program
             exit(0);
         }
         // Parse を行う
-        var ast = parser.Parse(tokens);
+        var ast = parser.block(tokens);
 
         if( parseOnly)
         {
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
+            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false) + "            -p");
             exit(0);
         }
 
@@ -83,7 +83,6 @@ class Program
 
         // 答えを出力する
         Console.WriteLine("----------------------------------------------------------------");
-
         Console.WriteLine("答えを出力する");
         Console.WriteLine(result);
 

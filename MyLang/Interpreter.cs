@@ -10,7 +10,7 @@ namespace MyLang
         public Interpreter()
         {
         }
-        Dictionary<string, float> symbol_dict = new Dictionary<string, float>();
+        //Dictionary<string, float> symbol_dict = new Dictionary<string, float>();
         public float Run(Ast.Ast ast)
         {
             // TODO: 仮のダミー実装
@@ -18,7 +18,9 @@ namespace MyLang
 
             Console.WriteLine("Interpreter.Run");// *-- ast.ToString() => BinOp;
             Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, true));
-            return Run_exp(ast as Exp);//as 強制轉型
+            Parser _parser = new Parser();
+            _parser.symbol_dict[_parser.symbol_str] = Run_exp(ast as Exp);
+            return _parser.symbol_dict[_parser.symbol_str];//as 強制轉型
         }
         float Run_exp(Exp exp)
         {
@@ -49,23 +51,29 @@ namespace MyLang
                 var num = exp as Number;
                 return num.Value;
             }
-            else if (exp is Symbol)
-            {
-                var num = exp as Symbol;
-                float found;
-                if (symbol_dict.TryGetValue(num.Value, out found))
-                {
-                    return found;
-                }
-                else
-                {
-                    Console.WriteLine(num.Value + " = ");
-                    var _input = Console.ReadLine();
-                    var n = Convert.ToSingle(_input);
-                    symbol_dict[num.Value] = n;
-                    return n;
-                }
-            }
+            //else if (exp is Symbol)
+            //{
+            //    var num = exp as Symbol;
+            //    float found;
+            //    if (symbol_dict.TryGetValue(num.Value, out found))
+            //    {
+            //        return found;
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(num.Value + " = ");
+            //        var _input = Console.ReadLine();
+            //        var n = Convert.ToSingle(_input);
+            //        symbol_dict[num.Value] = n;
+            //        return n;
+            //    }
+            //}
+            //else if (exp is Let)
+            //{
+            //    var num = exp as Let;
+
+            //    return 1;
+            //}
             return 0;
         }
     }

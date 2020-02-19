@@ -23,6 +23,15 @@ namespace MyLang
         Left_parenthesis, // "("
         Right_parenthesis, // ")"
         Space, // " "
+        Semicolon, // ";"
+        Equal, // "="
+        Comma, // ","
+        LBraket, // "{"
+        RBraket, // "}"
+        Print, // "print"
+        Let, // "let"
+        Function, // "function"
+        Return, // "return"
 
     }
 
@@ -42,6 +51,13 @@ namespace MyLang
 
         public bool IsNumber => (Type == TokenType.Number);
         public bool IsSymbol => (Type == TokenType.Symbol);
+        public bool IsLet => (Type == TokenType.Let);
+        public bool IsPrint => (Type == TokenType.Print);
+        public bool IsFunction => (Type == TokenType.Function);
+        public bool IsReturn => (Type == TokenType.Return);
+        public bool IsEqual => (Type == TokenType.Equal);
+        public bool IsSemicolon => (Type == TokenType.Semicolon);
+
         public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus 
             || Type == TokenType.Star || Type == TokenType.Slash
             || Type == TokenType.Left_parenthesis || Type == TokenType.Right_parenthesis

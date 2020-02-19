@@ -36,6 +36,9 @@ namespace MyLang
             Sub, // -
             Multiply, // *
             Divide, // /
+            Equal, // = 
+            Let, // let
+            Semicolon, // ;
         }
 
         /// <summary>
@@ -82,6 +85,71 @@ namespace MyLang
         {
             public readonly string Value;
             public Symbol(string value)
+            {
+                Value = value;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Value.ToString(), (Ast[])null);
+            }
+        }
+        public class Error : Exp
+        {
+            public readonly string Value;
+            public Error(string value)
+            {
+                Value = value;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Value.ToString(), (Ast[])null);
+            }
+        }
+        public class Let : Exp
+        {
+            public readonly string Value;
+            public Let(string value)
+            {
+                Value = value;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Value.ToString(), (Ast[])null);
+            }
+        }
+        public class Print : Exp
+        {
+            public readonly string Value;
+            public Print(string value)
+            {
+                Value = value;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Value.ToString(), (Ast[])null);
+            }
+        }
+        public class Function : Exp
+        {
+            public readonly string Value;
+            public Function(string value)
+            {
+                Value = value;
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create(Value.ToString(), (Ast[])null);
+            }
+        }
+        public class Return : Exp
+        {
+            public readonly string Value;
+            public Return(string value)
             {
                 Value = value;
             }

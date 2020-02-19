@@ -95,7 +95,24 @@ namespace MyLang
                     {
                         //Console.WriteLine("sum_eng");
                         //Console.WriteLine(sum_eng + " \n");
-                        dummy.Add(new Token(TokenType.Symbol, sum_eng.ToString()));
+                        switch (sum_eng.ToString())
+                        {
+                            case "print":
+                                dummy.Add(new Token(TokenType.Print, "print"));
+                                break;
+                            case "let":
+                                dummy.Add(new Token(TokenType.Let, "let"));
+                                break;
+                            case "function":
+                                dummy.Add(new Token(TokenType.Function, "function"));
+                                break;
+                            case "return":
+                                dummy.Add(new Token(TokenType.Return, "return"));
+                                break;
+                            default:
+                                dummy.Add(new Token(TokenType.Symbol, sum_eng.ToString()));
+                                break;
+                        }
                         sum_eng = "";
                     }
                     eng_isStr = false;
@@ -139,10 +156,24 @@ namespace MyLang
                         dummy.Add(new Token(TokenType.Left_parenthesis, "("));
                         break;
                     case ")":
-                        dummy.Add(new Token(TokenType.Right_parenthesis, ")"));
+                        dummy.Add(new Token(TokenType.Right_parenthesis, ")"));  //----
+                        break;
+                    case ";":
+                        dummy.Add(new Token(TokenType.Semicolon, ";"));
+                        break;
+                    case "=":
+                        dummy.Add(new Token(TokenType.Equal, "="));
+                        break;
+                    case ",":
+                        dummy.Add(new Token(TokenType.Comma, ","));
+                        break;
+                    case "{":
+                        dummy.Add(new Token(TokenType.LBraket, "{"));
+                        break;
+                    case "}":
+                        dummy.Add(new Token(TokenType.RBraket, "}"));
                         break;
                 }
-
             }
             if (int_isStr)
             {
@@ -154,9 +185,24 @@ namespace MyLang
 
             if (eng_isStr)
             {
-                Console.WriteLine("sum_eng");
-                Console.WriteLine(sum_eng + " \n");
-                dummy.Add(new Token(TokenType.Symbol, sum_eng.ToString()));
+                switch (sum_eng.ToString())
+                {
+                    case "print":
+                        dummy.Add(new Token(TokenType.Print, "print"));
+                        break;
+                    case "let":
+                        dummy.Add(new Token(TokenType.Let, "let"));
+                        break;
+                    case "function":
+                        dummy.Add(new Token(TokenType.Function, "function"));
+                        break;
+                    case "return":
+                        dummy.Add(new Token(TokenType.Return, "return"));
+                        break;
+                    default:
+                        dummy.Add(new Token(TokenType.Symbol, sum_eng.ToString()));
+                        break;
+                }
                 sum_eng = "";
             }
             dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
