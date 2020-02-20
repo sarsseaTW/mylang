@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using MyLang;
 
@@ -19,12 +20,24 @@ class Program
         // 引数をparseする
         var rest = new List<string>();
         int len = 0;
+        bool chk_LBraket;
+        bool chk_RBraket;
+        bool chk_LRBraket;
+        bool own_Semicolon;
+        string _input = "";
         Console.WriteLine("--------------------Input----------------------------------");
         while (true)
         {
-            string _input = Console.ReadLine();
+            _input = Console.ReadLine();
+            chk_LBraket = Regex.IsMatch(_input, "[A-Za-z0-9]+[\\{]+");
+            chk_LRBraket = Regex.IsMatch(_input, "[A-Za-z0-9]*[\\}]+");
+            own_Semicolon = Regex.IsMatch(_input, "[A-Za-z0-9]+[\\;]+");
             if (_input.Equals("end") == false)
             {
+                if (!own_Semicolon && !chk_LBraket)
+                {
+                    _input += ";";
+                }
                 if(_input.Equals("-h") || _input.Equals("--help"))
                 {
                     showHelpAndExit();
@@ -41,6 +54,30 @@ class Program
                 {
                     Logger.LogEnabled = true;
                 }
+                if(chk_LBraket && chk_LRBraket)
+                {
+                    rest.Insert(len++, _input);
+                }
+                else if (chk_LBraket)
+                {
+                    while (true)
+                    {
+                        string Break_input = Console.ReadLine();
+                        own_Semicolon = Regex.IsMatch(Break_input, "[A-Za-z0-9]+[\\;]");
+                        chk_RBraket = Regex.IsMatch(Break_input, "[\\}]");
+                        if (!own_Semicolon && !chk_RBraket)
+                        {
+                            Break_input += ";";
+                        }
+                        _input += Break_input;
+
+                        if (chk_RBraket)
+                        {
+                            break;
+                        }
+                    }
+                    rest.Insert(len++, _input);
+                }
                 else
                 {
                     rest.Insert(len++, _input);
@@ -50,6 +87,7 @@ class Program
             {
                 break;
             }
+            _input = "";
         }
         Console.WriteLine("------------------------End--------------------------------");
         // 引数がないなら、ヘルプを表示して終わる

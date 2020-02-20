@@ -10,9 +10,6 @@ namespace MyLang
     {
         IList<Token> tokens_;
         int pos_ = 0;
-        //public Dictionary<string, float > symbol_dict = new Dictionary<string, float>();
-        //Interpreter _interpreter = new Interpreter();
-        //public string symbol_str = "";
         static Dictionary<TokenType, Ast.BinOpType> BinOpMap = new Dictionary<TokenType, Ast.BinOpType>
         {
             {TokenType.Plus, Ast.BinOpType.Add }, // '+'
@@ -52,21 +49,18 @@ namespace MyLang
             pos_ = 0;
             Console.WriteLine("Ast.Ast Parse ");
             Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
-            Console.WriteLine("tokenPos");
-            for (int i = 0; i < tokens_.LongCount(); i++)
-            {
-                Console.WriteLine(tokens_[i].Text);
-            }
-            Console.WriteLine("\ntokenCount");
-            Console.WriteLine(tokens_.LongCount());
-
-            return block();
-        }
-        public Ast.Exp block()
-        {
-            var main_block = statement();
             return statement();
         }
+        //Ast.Exp block()
+        //{
+        //    var main_block = statement();
+        //    return block_realArea(main_block);
+        //}
+        //Ast.Exp block_realArea(Ast.Exp left_hs)
+        //{
+        //    var R_block = statement();
+        //    return statement();
+        //}
         Ast.Exp statement()
         {
             var left_hs = keyWord();
@@ -94,7 +88,8 @@ namespace MyLang
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
                 Console.WriteLine("\n" + tokenPos.Text + "            IsLBraket  statement_realArea tokenPos.ToString\n");
                 progress();
-                var right_hs = statement();
+                //var right_hs = block(); // jump to block
+                var right_hs = statement(); // jump to block
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 A { };
                 return statement_realArea(exp);
             }
@@ -108,8 +103,6 @@ namespace MyLang
             {
                 progress();
                 Console.WriteLine("\n" + tokenPos.Text + "            IsSymbol keyWord tokenPos.ToString\n");
-                //symbol_str = tokenPos.Text;
-                //_interpreter.symbol_dict[symbol_str] = 0;
                 return new Ast.Symbol(tokenPos.Text);
             }
             if (tokenPos.IsLet)
@@ -193,17 +186,14 @@ namespace MyLang
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
                 return exp2_realArea(exp);
             }
-            //else if (tokenPos.Type == TokenType.Semicolon || tokenPos.IsTerminate)
-            //{
-            //    progress();
-            //    Console.WriteLine("\n" + tokenPos.Text + "            IsSemicolon statement_realArea tokenPos.ToString\n");
+            else if (tokenPos.Type == TokenType.Semicolon || tokenPos.IsTerminate)
+            {
+                progress();
+                Console.WriteLine("\n" + tokenPos.Text + "            IsSemicolon statement_realArea tokenPos.ToString\n");
 
-            //    //var interpreter = new Interpreter();
-            //    //var ast = parser.block(tokens_);
-            //    //var result = interpreter.Run(ast);
-            //    //return keyWord();
-            //    return new Ast.Symbol(tokenPos.Text);
-            //}
+
+                return statement();
+            }
             else
             {
                 return left_hs;
@@ -224,18 +214,6 @@ namespace MyLang
             {
                 progress();
                 return new Ast.Symbol(tokenPos.Text);
-                //float found;
-                //if (_interpreter.symbol_dict.TryGetValue(tokenPos.Text, out found))
-                //{
-                //    return new Ast.Number(found);
-                //}
-                //else
-                //{
-                //    Console.WriteLine("\n" + tokenPos.Text + "            IsSymbol tokenPos.ToString\n");
-                //    symbol_str = tokenPos.Text;
-                //    _interpreter.symbol_dict[symbol_str] = 0;
-                //    return new Ast.Symbol(tokenPos.Text);
-                //}
             }
             else
                 return new Ast.Symbol(tokenPos.Text);

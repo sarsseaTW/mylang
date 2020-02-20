@@ -40,11 +40,17 @@ namespace MyLang
             string sum_int = "";
             string sum_eng = "";
             bool sem_tf = false;
+            
             for (int i = 0; i < src.Length; i++)
             {
                 // 初めステータス　を　設定
                 var any = src[i];
                 var any_2 = ' ';
+                var any_3 = ' ';
+                if (i != 0)
+                {
+                    any_3 = src[i - 1];
+                }
                 // 今まのステータス　と　またのステータス　を　取得する
                 if (i != src.Length - 1)
                 {
@@ -94,8 +100,6 @@ namespace MyLang
                 {
                     if (eng_isStr)
                     {
-                        //Console.WriteLine("sum_eng");
-                        //Console.WriteLine(sum_eng + " \n");
                         switch (sum_eng.ToString())
                         {
                             case "print":
@@ -173,46 +177,18 @@ namespace MyLang
                         dummy.Add(new Token(TokenType.LBraket, "{"));
                         break;
                     case "}":
+                        if (any_3 != ';')
+                        {
+                            dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
+                        }
                         dummy.Add(new Token(TokenType.RBraket, "}"));
                         break;
                 }
-            }
-            if (int_isStr)
-            {
-                Console.WriteLine("sum_int");
-                Console.WriteLine(sum_int + " \n");
-                dummy.Add(new Token(TokenType.Number, sum_int.ToString()));
-                sum_int = "";
-            }
-
-            if (eng_isStr)
-            {
-                switch (sum_eng.ToString())
-                {
-                    case "print":
-                        dummy.Add(new Token(TokenType.Print, "print"));
-                        break;
-                    case "let":
-                        dummy.Add(new Token(TokenType.Let, "let"));
-                        break;
-                    case "function":
-                        dummy.Add(new Token(TokenType.Function, "function"));
-                        break;
-                    case "return":
-                        dummy.Add(new Token(TokenType.Return, "return"));
-                        break;
-                    default:
-                        dummy.Add(new Token(TokenType.Symbol, sum_eng.ToString()));
-                        break;
-                }
-                sum_eng = "";
             }
             if (!sem_tf)
             {
                 dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
             }
-
-
             Console.WriteLine("Token");
             Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");
             return dummy;
