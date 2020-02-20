@@ -11,45 +11,47 @@ class Program
     /// コマンド の entry point
     /// </summary>
     /// <param name="args">コマンドライン引数</param>
-    static void Main(string[] args)
+    static void Main()
     {
         bool tokenizeOnly = false; // tokenize だけで終わるかどうか
         bool parseOnly = false; // parse だけで終わるかどうか
 
         // 引数をparseする
         var rest = new List<string>();
-
-        Console.WriteLine("arg");
-        for (int i = 0; i < args.Length; i++)
+        int len = 0;
+        Console.WriteLine("--------------------Input----------------------------------");
+        while (true)
         {
-            var arg = args[i];
-            switch (arg)
+            string _input = Console.ReadLine();
+            if (_input.Equals("end") == false)
             {
-                case "-h":
-                case "--help":
+                if(_input.Equals("-h") || _input.Equals("--help"))
+                {
                     showHelpAndExit();
-                    break;
-                case "-t":
-                case "--tokenize":
+                }
+                else if (_input.Equals("-t") || _input.Equals("--tokenize"))
+                {
                     tokenizeOnly = true;
-                    break;
-                case "-p":
-                case "--parse":
+                }
+                else if (_input.Equals("-p") || _input.Equals("--parse"))
+                {
                     parseOnly = true;
-                    break;
-                case "-d":
-                case "--debug":
+                }
+                else if (_input.Equals("-d") || _input.Equals("--debug"))
+                {
                     Logger.LogEnabled = true;
-                    break;
-                default:
-                    rest.Add(arg);
-                    Console.WriteLine(arg + "\n");
-                    break;
+                }
+                else
+                {
+                    rest.Insert(len++, _input);
+                }
+            }
+            else
+            {
+                break;
             }
         }
-        Console.WriteLine("rest");
-        Console.WriteLine(rest[0] + " \n");
-
+        Console.WriteLine("------------------------End--------------------------------");
         // 引数がないなら、ヘルプを表示して終わる
         if ( rest.Count <= 0)
         {
@@ -61,31 +63,47 @@ class Program
         var parser = new Parser();
         var interpreter = new Interpreter();
 
-        // Tokenize を行う
-        var tokens = tokenizer.Tokenize(string.Join(" ", rest.ToArray()));
-
-        if( tokenizeOnly)
+        for (int i = 0; i< rest.Count; i++)
         {
-            Console.WriteLine(string.Join(" ", tokens.Select(t => t.Text).ToArray()));
-            exit(0);
+            Console.WriteLine("------------------------Token" + i.ToString() + "--------------------------------");
+            Console.WriteLine("rest [" + i.ToString() + "]");
+            Console.WriteLine(rest[i] + "\n");
+
+
+            // Tokenize を行う
+            var tokens = tokenizer.Tokenize(rest[i].ToString());
+
+            if (tokenizeOnly)
+            {
+                Console.WriteLine(string.Join(" ", tokens.Select(t => t.Text).ToArray()));
+                if(i < rest.Count)
+                {
+                    continue;
+                }
+                //exit(0);
+            }
+            // Parse を行う
+
+            Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
+            var ast = parser.Parse(tokens);
+
+            if (parseOnly)
+            {
+                if (i < rest.Count)
+                {
+                    continue;
+                }
+                //exit(0);
+            }
+
+            // Interpreter で実行する
+            Console.WriteLine("--------------Interpreter" + i.ToString() + "------------- ");
+            var result = interpreter.Run(ast);
+
+            // 答えを出力する
+            Console.WriteLine("-----答えを出力する" + i.ToString() + "--------- ");
+            Console.WriteLine(result);
         }
-        // Parse を行う
-        var ast = parser.block(tokens);
-
-        if( parseOnly)
-        {
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false) + "            -p");
-            exit(0);
-        }
-
-        // Interpreter で実行する
-        var result = interpreter.Run(ast);
-
-        // 答えを出力する
-        Console.WriteLine("----------------------------------------------------------------");
-        Console.WriteLine("答えを出力する");
-        Console.WriteLine(result);
-
         exit(0);
     }
 

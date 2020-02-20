@@ -39,6 +39,7 @@ namespace MyLang
             bool eng_isStr = false;
             string sum_int = "";
             string sum_eng = "";
+            bool sem_tf = false;
             for (int i = 0; i < src.Length; i++)
             {
                 // 初めステータス　を　設定
@@ -160,6 +161,7 @@ namespace MyLang
                         break;
                     case ";":
                         dummy.Add(new Token(TokenType.Semicolon, ";"));
+                        sem_tf = true;
                         break;
                     case "=":
                         dummy.Add(new Token(TokenType.Equal, "="));
@@ -205,7 +207,10 @@ namespace MyLang
                 }
                 sum_eng = "";
             }
-            dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
+            if (!sem_tf)
+            {
+                dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
+            }
 
 
             Console.WriteLine("Token");

@@ -39,6 +39,7 @@ namespace MyLang
             Equal, // = 
             Let, // let
             Semicolon, // ;
+            LBraket, //{
         }
 
         /// <summary>

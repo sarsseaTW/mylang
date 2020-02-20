@@ -51,12 +51,19 @@ namespace MyLang
 
         public bool IsNumber => (Type == TokenType.Number);
         public bool IsSymbol => (Type == TokenType.Symbol);
+
+
         public bool IsLet => (Type == TokenType.Let);
         public bool IsPrint => (Type == TokenType.Print);
         public bool IsFunction => (Type == TokenType.Function);
         public bool IsReturn => (Type == TokenType.Return);
+
         public bool IsEqual => (Type == TokenType.Equal);
+        public bool IsLBraket => (Type == TokenType.LBraket);
+        public bool IsRBraket => (Type == TokenType.RBraket);
+
         public bool IsSemicolon => (Type == TokenType.Semicolon);
+        public bool IsTerminate => (Type == TokenType.Terminate);
 
         public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus 
             || Type == TokenType.Star || Type == TokenType.Slash

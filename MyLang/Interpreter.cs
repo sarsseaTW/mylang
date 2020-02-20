@@ -10,7 +10,9 @@ namespace MyLang
         public Interpreter()
         {
         }
-        //Dictionary<string, float> symbol_dict = new Dictionary<string, float>();
+        public Dictionary<string, float> symbol_dict = new Dictionary<string, float>();
+        public string symbol_str = "";
+        //Parser _parser = new Parser();
         public float Run(Ast.Ast ast)
         {
             // TODO: 仮のダミー実装
@@ -18,15 +20,14 @@ namespace MyLang
 
             Console.WriteLine("Interpreter.Run");// *-- ast.ToString() => BinOp;
             Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, true));
-            Parser _parser = new Parser();
-            _parser.symbol_dict[_parser.symbol_str] = Run_exp(ast as Exp);
-            return _parser.symbol_dict[_parser.symbol_str];//as 強制轉型
+            //symbol_dict[_parser.symbol_str] = Run_exp(ast as Exp);
+            return Run_exp(ast as Exp);//as 強制轉型
         }
         float Run_exp(Exp exp)
         {
-            Console.WriteLine("Run_exp.Run");// *-- ast.ToString() => BinOp;
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(exp, true) + "\n");
-            Console.WriteLine("----------------------------------------------------------------");
+            //Console.WriteLine("Run_exp.Run");// *-- ast.ToString() => BinOp;
+            //Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(exp, true) + "\n");
+            //Console.WriteLine("----------------------------------------------------------------");
             if (exp is BinOp)//  [ '+' , '-' , '*' , '/']
             {
                 var _binOp = exp as BinOp;
@@ -44,6 +45,9 @@ namespace MyLang
                         return exp_LHS * exp_RHS;
                     case BinOpType.Divide:
                         return exp_LHS / exp_RHS;
+                    case BinOpType.Equal:
+                        symbol_dict[symbol_str] = exp_RHS;
+                        return symbol_dict[symbol_str];
                 }
             }
             else if(exp is Number)
@@ -51,29 +55,21 @@ namespace MyLang
                 var num = exp as Number;
                 return num.Value;
             }
-            //else if (exp is Symbol)
-            //{
-            //    var num = exp as Symbol;
-            //    float found;
-            //    if (symbol_dict.TryGetValue(num.Value, out found))
-            //    {
-            //        return found;
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine(num.Value + " = ");
-            //        var _input = Console.ReadLine();
-            //        var n = Convert.ToSingle(_input);
-            //        symbol_dict[num.Value] = n;
-            //        return n;
-            //    }
-            //}
-            //else if (exp is Let)
-            //{
-            //    var num = exp as Let;
-
-            //    return 1;
-            //}
+            else if (exp is Symbol)
+            {
+                var num = exp as Symbol;
+                float found;
+                if (symbol_dict.TryGetValue(num.Value, out found))
+                {
+                    return found;
+                }
+                else
+                {
+                    symbol_str = num.Value;
+                    symbol_dict[symbol_str] = 0;
+                    return symbol_dict[symbol_str];
+                }
+            }
             return 0;
         }
     }
