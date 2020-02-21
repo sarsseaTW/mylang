@@ -21,10 +21,10 @@ namespace MyLang
         public IList<Token> Tokenize(string src)
         {
 
-            Console.WriteLine("rest to array");
-            Console.WriteLine(src + " \n");
-            Console.WriteLine("src length");
-            Console.WriteLine(src.Length + " \n");
+            //Console.WriteLine("rest to array");
+            //Console.WriteLine(src + " \n");
+            //Console.WriteLine("src length");
+            //Console.WriteLine(src.Length + " \n");
             /* Console.WriteLine("src[0]");
              Console.WriteLine(src[0] + " \n");
              Console.WriteLine("src[11]");

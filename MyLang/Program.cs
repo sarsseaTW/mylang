@@ -33,6 +33,7 @@ class Program
             chk_one_Braket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*[{][^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[}]$");
             own_Semicolon = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;][^A-Za-z0-9]*");
             bool test = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;]$");
+            if (_input.Equals("")) continue;
             if (_input.Equals("end") == false)
             {
                 //if(test) Console.WriteLine("-----------------GGGGGGGGGGGGGGGGGGGGGGEGEGEGE----------------------");
@@ -91,7 +92,7 @@ class Program
             }
             _input = "";
         }
-        Console.WriteLine("------------------------End--------------------------------");
+        Console.WriteLine("------------------------End--------------------------------\n");
         // 引数がないなら、ヘルプを表示して終わる
         if ( rest.Count <= 0)
         {
