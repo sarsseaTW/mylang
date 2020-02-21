@@ -40,6 +40,7 @@ namespace MyLang
             Let, // let
             Semicolon, // ;
             LBraket, //{
+            RBraket, //}
         }
 
         /// <summary>

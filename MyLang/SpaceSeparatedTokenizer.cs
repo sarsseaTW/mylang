@@ -177,7 +177,7 @@ namespace MyLang
                         dummy.Add(new Token(TokenType.LBraket, "{"));
                         break;
                     case "}":
-                        if (any_3 != ';')
+                        if (any_3 != ';' && any_3 != '{')
                         {
                             dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
                         }

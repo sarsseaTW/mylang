@@ -22,18 +22,20 @@ class Program
         int len = 0;
         bool chk_LBraket;
         bool chk_RBraket;
-        bool chk_LRBraket;
+        bool chk_one_Braket;
         bool own_Semicolon;
         string _input = "";
         Console.WriteLine("--------------------Input----------------------------------");
         while (true)
         {
             _input = Console.ReadLine();
-            chk_LBraket = Regex.IsMatch(_input, "[A-Za-z0-9]+[\\{]+");
-            chk_LRBraket = Regex.IsMatch(_input, "[A-Za-z0-9]*[\\}]+");
-            own_Semicolon = Regex.IsMatch(_input, "[A-Za-z0-9]+[\\;]+");
+            chk_LBraket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*({)[^A-Za-z0-9]*");
+            chk_one_Braket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*[{][^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[}]$");
+            own_Semicolon = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;][^A-Za-z0-9]*");
+            bool test = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;]$");
             if (_input.Equals("end") == false)
             {
+                //if(test) Console.WriteLine("-----------------GGGGGGGGGGGGGGGGGGGGGGEGEGEGE----------------------");
                 if (!own_Semicolon && !chk_LBraket)
                 {
                     _input += ";";
@@ -54,7 +56,7 @@ class Program
                 {
                     Logger.LogEnabled = true;
                 }
-                if(chk_LBraket && chk_LRBraket)
+                if(chk_one_Braket)
                 {
                     rest.Insert(len++, _input);
                 }
@@ -63,8 +65,8 @@ class Program
                     while (true)
                     {
                         string Break_input = Console.ReadLine();
-                        own_Semicolon = Regex.IsMatch(Break_input, "[A-Za-z0-9]+[\\;]");
-                        chk_RBraket = Regex.IsMatch(Break_input, "[\\}]");
+                        own_Semicolon = Regex.IsMatch(_input,"[^A-Za-z0-9]*[[A-Za-z0-9]*|[^A-Za-z0-9]*]*[^A-Za-z0-9]*[;][^A-Za-z0-9]*");
+                        chk_RBraket = Regex.IsMatch(_input,"[[A-Za-z0-9]*|[^A-Za-z0-9]*]*(})[^A-Za-z0-9]*");
                         if (!own_Semicolon && !chk_RBraket)
                         {
                             Break_input += ";";
@@ -100,6 +102,7 @@ class Program
         ITokenizer tokenizer = new SpaceSeparatedTokenizer();
         var parser = new Parser();
         var interpreter = new Interpreter();
+        bool in_function;
 
         for (int i = 0; i< rest.Count; i++)
         {
@@ -110,6 +113,10 @@ class Program
 
             // Tokenize を行う
             var tokens = tokenizer.Tokenize(rest[i].ToString());
+            for(int j = 0; j < tokens.Count; j++)
+            {
+                Console.WriteLine("No."+i.ToString()+"   tokens [" + j.ToString() + "]    " + tokens[j].Type + "\n");
+            }
 
             if (tokenizeOnly)
             {

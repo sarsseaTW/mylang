@@ -10,6 +10,7 @@ namespace MyLang
     {
         IList<Token> tokens_;
         int pos_ = 0;
+        bool is_function = false;
         static Dictionary<TokenType, Ast.BinOpType> BinOpMap = new Dictionary<TokenType, Ast.BinOpType>
         {
             {TokenType.Plus, Ast.BinOpType.Add }, // '+'
@@ -20,6 +21,7 @@ namespace MyLang
             {TokenType.Let, Ast.BinOpType.Let },  // 'Let'
             {TokenType.Semicolon, Ast.BinOpType.Semicolon },  // ';'
             {TokenType.LBraket, Ast.BinOpType.LBraket },  // '{'
+            {TokenType.RBraket, Ast.BinOpType.RBraket },  // '{'
         };
 
         public Parser()
@@ -74,7 +76,7 @@ namespace MyLang
             {
                 return statement();
             }
-            if (tokenPos.IsEqual)
+            else if (tokenPos.IsEqual)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
                 Console.WriteLine("\n" + tokenPos.Text + "            IsEqual  statement_realArea tokenPos.ToString\n");
@@ -83,7 +85,7 @@ namespace MyLang
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 A = 1 + 2 ;
                 return statement_realArea(exp);
             }
-            if (tokenPos.IsLBraket)
+            else if (tokenPos.IsLBraket)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
                 Console.WriteLine("\n" + tokenPos.Text + "            IsLBraket  statement_realArea tokenPos.ToString\n");
@@ -92,6 +94,11 @@ namespace MyLang
                 var right_hs = statement(); // jump to block
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 A { };
                 return statement_realArea(exp);
+            }
+            else if (tokenPos.IsRBraket)
+            {
+                is_function = false;
+                return left_hs;
             }
             else
                 return left_hs;
@@ -123,7 +130,7 @@ namespace MyLang
             else if (tokenPos.IsFunction)
             {
                 progress();
-
+                is_function = true;
                 Console.WriteLine("\n" + tokenPos.Text + "            IsFunction keyWord tokenPos.ToString\n");
 
                 return new Ast.Function(tokenPos.Text);
@@ -158,7 +165,7 @@ namespace MyLang
                 progress();
                 var right_hs = exp2();
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1+4+8-82+5
-                return exp1_realArea(exp);//lhs = 3, op = sub, rhs = 266
+                return exp1_realArea(exp);
             }
             else
             {
@@ -188,11 +195,17 @@ namespace MyLang
             }
             else if (tokenPos.Type == TokenType.Semicolon || tokenPos.IsTerminate)
             {
-                progress();
                 Console.WriteLine("\n" + tokenPos.Text + "            IsSemicolon statement_realArea tokenPos.ToString\n");
 
-
-                return statement();
+                if (is_function)
+                {
+                    progress();
+                    return statement();
+                }
+                else
+                {
+                    return left_hs;
+                }
             }
             else
             {
