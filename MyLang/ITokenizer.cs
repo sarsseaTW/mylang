@@ -52,7 +52,7 @@ namespace MyLang
         public bool IsNumber => (Type == TokenType.Number);
         public bool IsSymbol => (Type == TokenType.Symbol);
 
-
+        
         public bool IsLet => (Type == TokenType.Let);
         public bool IsPrint => (Type == TokenType.Print);
         public bool IsFunction => (Type == TokenType.Function);
