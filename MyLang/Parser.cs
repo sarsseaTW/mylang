@@ -8,6 +8,7 @@ namespace MyLang
 {
     public class Parser
     {
+        #region Var
         IList<Token> tokens_;
         int pos_ = 0;
         bool is_function = false;
@@ -23,11 +24,11 @@ namespace MyLang
             {TokenType.LBraket, Ast.BinOpType.LBraket },  // '{'
             {TokenType.RBraket, Ast.BinOpType.RBraket },  // '{'
         };
-
+        #endregion
         public Parser()
         {
         }
-
+        #region Utilities
         /// <summary>
         /// 現在のトークンを取得する
         /// </summary>
@@ -36,7 +37,6 @@ namespace MyLang
         {
             return tokens_[pos_];
         }
-
         /// <summary>
         /// 次のトークンに進む
         /// </summary>
@@ -45,7 +45,17 @@ namespace MyLang
             Logger.Trace($"progress {currentToken().Text}");
             pos_++;
         }
-        public Ast.Exp Parse(IList<Token> tokens)
+        /// <summary>
+        /// 現在のトークンを取得する と 次のトークンに進む
+        /// </summary>
+        Token runToken(TokenType _token)
+        {
+            var tokenPos = currentToken();
+            progress();
+            return tokenPos;
+        }
+        #endregion
+        public Ast.Ast Parse(IList<Token> tokens) //other
         {
             tokens_ = tokens;
             pos_ = 0;
@@ -53,103 +63,111 @@ namespace MyLang
             Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return statement();
         }
-        //Ast.Exp block()
-        //{
-        //    var main_block = statement();
-        //    return block_realArea(main_block);
-        //}
-        //Ast.Exp block_realArea(Ast.Exp left_hs)
-        //{
-        //    var R_block = statement();
-        //    return statement();
-        //}
-        Ast.Exp statement()
+        public Ast.Ast Function_Parse(IList<Token> tokens) // function
         {
-            var left_hs = keyWord();
-            return statement_realArea(left_hs);
+            tokens_ = tokens;
+            pos_ = 0;
+            Console.WriteLine("Ast.Ast Parse ");
+            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+            return statement_program();
         }
-        Ast.Exp statement_realArea(Ast.Exp left_hs)
+        Ast.Program statement_program()
         {
-            var tokenPos = currentToken();
+            var statement_group = new List<Ast.Statement>();
+            while (!currentToken().IsRBraket)
+            {
+                statement_group.Add(statement());
+            }
+            var a = statement_group.ToArray();
+            int b = a.Length;
+            Console.WriteLine("--------------statement_program  " +  b.ToString()+"------------- ");
+            return new Ast.Program(statement_group);
+        }
+        Ast.Statement[] Block()
+        {
+            var statement_group = new List<Ast.Statement>();
+            while (true)
+            {
+                var stat = statement();
+                if (stat == null)
+                {
+                    break;
+                }
+                statement_group.Add(stat);
+                progress();
+            }
 
-            if (tokenPos.IsSymbol)
-            {
-                return statement();
-            }
-            else if (tokenPos.IsEqual)
-            {
-                var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
-                Console.WriteLine("\n" + tokenPos.Text + "            IsEqual  statement_realArea tokenPos.ToString\n");
-                progress();
-                var right_hs = exp1();
-                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 A = 1 + 2 ;
-                return statement_realArea(exp);
-            }
-            else if (tokenPos.IsLBraket)
-            {
-                var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
-                Console.WriteLine("\n" + tokenPos.Text + "            IsLBraket  statement_realArea tokenPos.ToString\n");
-                progress();
-                //var right_hs = block(); // jump to block
-                var right_hs = statement(); // jump to block
-                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 A { };
-                return statement_realArea(exp);
-            }
-            else if (tokenPos.IsRBraket)
-            {
-                is_function = false;
-                return left_hs;
-            }
-            else
-                return left_hs;
+            return statement_group.ToArray();
         }
-        Ast.Exp keyWord()
+        //------------------------------------------------------------------------------------------
+        #region statement
+        Ast.Statement statement()
         {
             var tokenPos = currentToken();
-            if (tokenPos.IsSymbol)
-            {
-                progress();
-                Console.WriteLine("\n" + tokenPos.Text + "            IsSymbol keyWord tokenPos.ToString\n");
-                return new Ast.Symbol(tokenPos.Text);
-            }
             if (tokenPos.IsLet)
             {
-                progress();
-                Console.WriteLine("\n" + tokenPos.Text + "            IsLet keyWord tokenPos.ToString\n");
-
-                return new Ast.Let(tokenPos.Text);
+                return LetStatement();
             }
             else if (tokenPos.IsPrint)
             {
-                progress();
-
-                Console.WriteLine("\n" + tokenPos.Text + "            IsPrint keyWord tokenPos.ToString\n");
-
-                return exp1();
+                return PrintStatement();
             }
             else if (tokenPos.IsFunction)
             {
-                progress();
-                is_function = true;
-                Console.WriteLine("\n" + tokenPos.Text + "            IsFunction keyWord tokenPos.ToString\n");
-
-                return new Ast.Function(tokenPos.Text);
+                return FunctionStatement();
             }
             else if (tokenPos.IsReturn)
             {
-                progress();
-
-                Console.WriteLine("\n" + tokenPos.Text + "            IsReturn keyWord tokenPos.ToString\n");
-
-                return exp1();
+                return ReturnStatement();
             }
-            return new Ast.Symbol(tokenPos.Text);
+            else
+            {
+                return null;
+            }
         }
-        Ast.Exp assign()
+        Ast.Statement LetStatement()// let a = 3;
         {
-            var left_hs = keyWord();
-            return exp1_realArea(left_hs);
+            runToken(TokenType.Let);//return let ,pos++                    
+            var tokenPos = currentToken();//return a
+            var symbol = new Ast.Symbol(tokenPos.Text);//symbol = a
+            progress();
+            runToken(TokenType.Equal);//return =, pos++   
+            var exp_val = exp();// 3
+
+            //runToken(TokenType.Semicolon);// ;
+
+            return new Ast.LetStatement(symbol, exp_val);
         }
+        Ast.Statement PrintStatement()// print a ; 
+        {
+            runToken(TokenType.Print);//return print, pos++
+            var exp_val = exp();// a
+            //runToken(TokenType.Semicolon);// ;
+            return new Ast.PrintStatement(exp_val);
+        }
+        Ast.Statement FunctionStatement()// function v{
+        {
+            runToken(TokenType.Function);//return function ,pos++                    
+            var tokenPos = currentToken();//return v
+            var symbol = new Ast.Symbol(tokenPos.Text);//symbol = v
+            progress();
+            runToken(TokenType.LBraket);//return {, pos++   
+            var block_val = Block();// block
+
+            //runToken(TokenType.RBraket);// }
+
+            return new Ast.FunctionStatement(symbol,block_val);
+        }
+        Ast.Statement ReturnStatement()// Return a ; 
+        {
+            runToken(TokenType.Return);//return Return, pos++
+            var exp_val = exp();// a
+            //runToken(TokenType.Semicolon);// ;
+            return new Ast.ReturnStatement(exp_val);
+        }
+        #endregion
+        //-------------------------------------------------------------------------------------
+        #region exp
 
         Ast.Exp exp()
         {
@@ -158,6 +176,10 @@ namespace MyLang
         Ast.Exp exp1()
         {
             var left_hs = exp2();
+            if (left_hs == null)
+            {
+                return null;
+            }
             return exp1_realArea(left_hs);
         }
         Ast.Exp exp1_realArea(Ast.Exp left_hs)
@@ -180,15 +202,15 @@ namespace MyLang
         Ast.Exp exp2()
         {
             var left_hs = expVal();
+            if (left_hs == null)
+            {
+                return null;
+            }
             return exp2_realArea(left_hs);
         }
         Ast.Exp exp2_realArea(Ast.Exp left_hs)
         {
             var tokenPos = currentToken();
-            //if (tokenPos.IsNumber || tokenPos.IsSymbol) 
-            //{
-            //    exp2();
-            //}
             if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
@@ -198,20 +220,6 @@ namespace MyLang
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
                 return exp2_realArea(exp);
             }
-            //else if (tokenPos.Type == TokenType.Semicolon || tokenPos.IsTerminate)
-            //{
-            //    Console.WriteLine("\n" + tokenPos.Text + "            IsSemicolon statement_realArea tokenPos.ToString\n");
-
-            //    if (is_function)
-            //    {
-            //        progress();
-            //        return statement();
-            //    }
-            //    else
-            //    {
-            //        return left_hs;
-            //    }
-            //}
             else
             {
                 return left_hs;
@@ -230,17 +238,25 @@ namespace MyLang
             }
             else if (tokenPos.IsSymbol)
             {
-                progress();
-                var chk_next_tokenPos = currentToken();
-                if (chk_next_tokenPos.Type == TokenType.LParenthesis)//text = function name 
+                var name = new Ast.Symbol(tokenPos.Text);
+                if (currentToken().Type != TokenType.LParenthesis)//text = function name 
                 {
-                    //tokenPos.Text
+                    progress();
+                    return name;
                 }
-                return new Ast.Symbol(tokenPos.Text);
+                else
+                {
+                    runToken(TokenType.LParenthesis);
+                    var add = new List<Ast.Exp>();
+
+
+                    runToken(TokenType.RParenthesis);
+                    return null; // return add(1+1+1+1+11+1);
+                }
             }
             else
                 return null;
-                //return new Ast.Symbol(tokenPos.Text);
         }
+        #endregion
     }
 }

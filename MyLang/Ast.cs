@@ -20,6 +20,7 @@ namespace MyLang
             /// </summary>
             /// <returns>文字列表現のための情報</returns>
             public abstract Tuple<string, Ast[]> GetDisplayInfo();
+            
         }
 
         /// <summary>
@@ -120,6 +121,7 @@ namespace MyLang
             public Program(IList<Statement> statements)
             {
                 Statements = statements.ToArray();
+                Console.WriteLine("Ast.cs      Ast.Program    " + Statements.Length.ToString());
             }
 
             public override Tuple<string, Ast[]> GetDisplayInfo()
@@ -130,11 +132,11 @@ namespace MyLang
         
         public abstract class Statement : Ast { }
 
-        public class AssignStatement : Statement
+        public class LetStatement : Statement
         {
             public readonly Symbol Variable;
             public readonly Exp Exp;
-            public AssignStatement(Symbol variable, Exp exp)
+            public LetStatement(Symbol variable, Exp exp)
             {
                 Variable = variable;
                 Exp = exp;

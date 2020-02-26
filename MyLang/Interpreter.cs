@@ -12,16 +12,36 @@ namespace MyLang
         }
         public Dictionary<string, float> symbol_dict = new Dictionary<string, float>();
         public string symbol_str = "";
-        //Parser _parser = new Parser();
-        public float Run(Ast.Ast ast)
+        public void Run(Ast.Ast ast)
         {
             // TODO: 仮のダミー実装
-
-
+            Console.WriteLine(new AstDisplayer().BuildString(ast, false));
             Console.WriteLine("Interpreter.Run");// *-- ast.ToString() => BinOp;
-            Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, true));
-            //symbol_dict[_parser.symbol_str] = Run_exp(ast as Exp);
-            return Run_exp(ast as Exp);//as 強制轉型
+            
+            if (ast is PrintStatement P)
+            {
+                Console.WriteLine(Run_exp(P.Exp));
+            }
+            if (ast is LetStatement L)
+            {
+                symbol_str = L.Variable.Value.ToString();
+                symbol_dict[symbol_str] = Run_exp(L.Exp);
+                Console.WriteLine(symbol_dict[symbol_str]);
+            }
+            if(ast is Ast.Program pg)
+            {
+                Console.WriteLine("ast -> statement[]");
+                function_statement(pg.Statements);
+            }
+        }
+        void function_statement(Statement[] f_st)
+        {
+            Console.WriteLine("statement[] -> functionStatement");
+            function_Body(f_st[0]);
+        }
+        void function_Body(Statement f_bd)
+        {
+            
         }
         float Run_exp(Exp exp)
         {
@@ -38,13 +58,21 @@ namespace MyLang
                 switch (_binOp.Operator)
                 {
                     case BinOpType.Add:
-                        return exp_LHS + exp_RHS;
+                        var sum = exp_LHS + exp_RHS;
+                        symbol_dict[symbol_str] = sum;
+                        return symbol_dict[symbol_str];
                     case BinOpType.Sub:
-                        return exp_LHS - exp_RHS;
+                        var sum2 = exp_LHS - exp_RHS;
+                        symbol_dict[symbol_str] = sum2;
+                        return symbol_dict[symbol_str];
                     case BinOpType.Multiply:
-                        return exp_LHS * exp_RHS;
+                        var sum3 = exp_LHS * exp_RHS;
+                        symbol_dict[symbol_str] = sum3;
+                        return symbol_dict[symbol_str];
                     case BinOpType.Divide:
-                        return exp_LHS / exp_RHS;
+                        var sum4 = exp_LHS / exp_RHS;
+                        symbol_dict[symbol_str] = sum4;
+                        return symbol_dict[symbol_str];
                     case BinOpType.Equal:
                         symbol_dict[symbol_str] = exp_RHS;
                         return symbol_dict[symbol_str];

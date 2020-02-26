@@ -150,7 +150,16 @@ class Program
 
             // Parse を行う
             Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
-            var ast = parser.Parse(tokens);
+            MyLang.Ast.Ast ast;
+            if(tokens[0].Type == TokenType.Function)
+            {
+                ast = parser.Function_Parse(tokens);
+            }
+            else
+            {
+                ast = parser.Parse(tokens);
+            }
+            
 
             if (parseOnly)
             {
@@ -163,11 +172,8 @@ class Program
 
             // Interpreter で実行する
             Console.WriteLine("--------------Interpreter" + i.ToString() + "------------- ");
-            var result = interpreter.Run(ast);
-
-            // 答えを出力する
-            Console.WriteLine("-----答えを出力する" + i.ToString() + "--------- ");
-            Console.WriteLine(result);
+            interpreter.Run(ast);
+            
         }
         exit(0);
     }
