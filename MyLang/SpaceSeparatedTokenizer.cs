@@ -158,10 +158,10 @@ namespace MyLang
                         dummy.Add(new Token(TokenType.Slash, "/"));
                         break;
                     case "(":
-                        dummy.Add(new Token(TokenType.Left_parenthesis, "("));
+                        dummy.Add(new Token(TokenType.LParenthesis, "("));
                         break;
                     case ")":
-                        dummy.Add(new Token(TokenType.Right_parenthesis, ")"));  //----
+                        dummy.Add(new Token(TokenType.RParenthesis, ")")); 
                         break;
                     case ";":
                         dummy.Add(new Token(TokenType.Semicolon, ";"));
@@ -172,6 +172,9 @@ namespace MyLang
                         break;
                     case ",":
                         dummy.Add(new Token(TokenType.Comma, ","));
+                        break;
+                    case "@":
+                        dummy.Add(new Token(TokenType.Inser, ","));
                         break;
                     case "{":
                         dummy.Add(new Token(TokenType.LBraket, "{"));

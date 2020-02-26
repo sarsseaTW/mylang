@@ -141,7 +141,7 @@ namespace MyLang
 
                 Console.WriteLine("\n" + tokenPos.Text + "            IsReturn keyWord tokenPos.ToString\n");
 
-                return new Ast.Return(tokenPos.Text);
+                return exp1();
             }
             return new Ast.Symbol(tokenPos.Text);
         }
@@ -149,6 +149,11 @@ namespace MyLang
         {
             var left_hs = keyWord();
             return exp1_realArea(left_hs);
+        }
+
+        Ast.Exp exp()
+        {
+            return exp1();
         }
         Ast.Exp exp1()
         {
@@ -180,10 +185,10 @@ namespace MyLang
         Ast.Exp exp2_realArea(Ast.Exp left_hs)
         {
             var tokenPos = currentToken();
-            if (tokenPos.IsNumber || tokenPos.IsSymbol) 
-            {
-                exp2();
-            }
+            //if (tokenPos.IsNumber || tokenPos.IsSymbol) 
+            //{
+            //    exp2();
+            //}
             if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
@@ -193,20 +198,20 @@ namespace MyLang
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
                 return exp2_realArea(exp);
             }
-            else if (tokenPos.Type == TokenType.Semicolon || tokenPos.IsTerminate)
-            {
-                Console.WriteLine("\n" + tokenPos.Text + "            IsSemicolon statement_realArea tokenPos.ToString\n");
+            //else if (tokenPos.Type == TokenType.Semicolon || tokenPos.IsTerminate)
+            //{
+            //    Console.WriteLine("\n" + tokenPos.Text + "            IsSemicolon statement_realArea tokenPos.ToString\n");
 
-                if (is_function)
-                {
-                    progress();
-                    return statement();
-                }
-                else
-                {
-                    return left_hs;
-                }
-            }
+            //    if (is_function)
+            //    {
+            //        progress();
+            //        return statement();
+            //    }
+            //    else
+            //    {
+            //        return left_hs;
+            //    }
+            //}
             else
             {
                 return left_hs;
@@ -218,7 +223,7 @@ namespace MyLang
             if (tokenPos.IsNumber)
             {
                 progress();
-                
+
                 Console.WriteLine("\n" + tokenPos.Text + "            IsNumber tokenPos.ToString\n");
 
                 return new Ast.Number(float.Parse(tokenPos.Text));
@@ -226,10 +231,16 @@ namespace MyLang
             else if (tokenPos.IsSymbol)
             {
                 progress();
+                var chk_next_tokenPos = currentToken();
+                if (chk_next_tokenPos.Type == TokenType.LParenthesis)//text = function name 
+                {
+                    //tokenPos.Text
+                }
                 return new Ast.Symbol(tokenPos.Text);
             }
             else
-                return new Ast.Symbol(tokenPos.Text);
+                return null;
+                //return new Ast.Symbol(tokenPos.Text);
         }
     }
 }

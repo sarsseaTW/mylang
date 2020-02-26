@@ -74,7 +74,7 @@ class Program
                 if(chk_one_Braket)
                 {
                     getFunction(_input);
-                    //rest.Insert(len++, _input);
+                    rest.Insert(len++, _input);
                 }
                 else if (chk_LBraket)
                 {
@@ -95,7 +95,7 @@ class Program
                         }
                     }
                     getFunction(_input);
-                    //rest.Insert(len++, _input);
+                    rest.Insert(len++, _input);
                 }
                 else
                 {
@@ -131,7 +131,6 @@ class Program
             Console.WriteLine("rest [" + i.ToString() + "]");
             Console.WriteLine(rest[i] + "\n");
 
-
             // Tokenize を行う
             var tokens = tokenizer.Tokenize(rest[i].ToString());
             for(int j = 0; j < tokens.Count; j++)
@@ -148,8 +147,8 @@ class Program
                 }
                 //exit(0);
             }
-            // Parse を行う
 
+            // Parse を行う
             Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
             var ast = parser.Parse(tokens);
 

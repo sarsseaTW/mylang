@@ -96,71 +96,111 @@ namespace MyLang
                 return Tuple.Create(Value.ToString(), (Ast[])null);
             }
         }
-        public class Error : Exp
+        /// ---------------------------------------------------------------------------------------------
+        public class ApplyFunction : Exp
         {
-            public readonly string Value;
-            public Error(string value)
+            public readonly Symbol Name;
+            public readonly Exp[] Args;
+            public ApplyFunction(Symbol name, Exp[] args)
             {
-                Value = value;
+                Name = name;
+                Args = args;
             }
 
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create(Value.ToString(), (Ast[])null);
+                return Tuple.Create("ApplyFunction", new Ast[] { Name }.Concat(Args).ToArray());
             }
         }
-        public class Let : Exp
+        /// ---------------------------------------------------------------------------------------------
+        public class Program : Ast
         {
-            public readonly string Value;
-            public Let(string value)
+            public readonly Statement[] Statements;
+
+            public Program(IList<Statement> statements)
             {
-                Value = value;
+                Statements = statements.ToArray();
             }
 
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create(Value.ToString(), (Ast[])null);
+                return Tuple.Create("Program", Statements.Select(s => (Ast)s).ToArray());
             }
         }
-        public class Print : Exp
+        
+        public abstract class Statement : Ast { }
+
+        public class AssignStatement : Statement
         {
-            public readonly string Value;
-            public Print(string value)
+            public readonly Symbol Variable;
+            public readonly Exp Exp;
+            public AssignStatement(Symbol variable, Exp exp)
             {
-                Value = value;
+                Variable = variable;
+                Exp = exp;
             }
 
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create(Value.ToString(), (Ast[])null);
-            }
-        }
-        public class Function : Exp
-        {
-            public readonly string Value;
-            public Function(string value)
-            {
-                Value = value;
+                return Tuple.Create("let", new Ast[] { Variable, Exp });
             }
 
-            public override Tuple<string, Ast[]> GetDisplayInfo()
-            {
-                return Tuple.Create(Value.ToString(), (Ast[])null);
-            }
         }
-        public class Return : Exp
-        {
-            public readonly string Value;
-            public Return(string value)
-            {
-                Value = value;
-            }
 
+        public class PrintStatement : Statement
+        {
+            public readonly Exp Exp;
+            public PrintStatement(Exp exp)
+            {
+                Exp = exp;
+            }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create(Value.ToString(), (Ast[])null);
+                return Tuple.Create("print", new Ast[] { Exp });
             }
         }
+
+        public class ReturnStatement : Statement
+        {
+            public readonly Exp Exp;
+            public ReturnStatement(Exp exp)
+            {
+                Exp = exp;
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("return", new Ast[] { Exp });
+            }
+        }
+
+        public class FunctionStatement : Statement
+        {
+            public readonly Symbol Name;
+            public readonly Statement[] Body;
+            public FunctionStatement(Symbol name, IList<Statement> body)
+            {
+                Name = name;
+                Body = body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("function", new Ast[] { Name, new AstList(Body) });
+            }
+        }
+
+        public class AstList : Ast
+        {
+            public Ast[] List;
+            public AstList(Ast[] list)
+            {
+                List = list;
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("", List);
+            }
+        }
+
         /// <summary>
         /// ASTを文字列表現に変換するクラス
         /// </summary>

@@ -20,8 +20,8 @@ namespace MyLang
         Minus, // "-"
         Star, // "*"
         Slash, // "/"
-        Left_parenthesis, // "("
-        Right_parenthesis, // ")"
+        LParenthesis, // "("
+        RParenthesis, // ")"
         Space, // " "
         Semicolon, // ";"
         Equal, // "="
@@ -32,6 +32,7 @@ namespace MyLang
         Let, // "let"
         Function, // "function"
         Return, // "return"
+        Inser, // "@"
 
     }
 
@@ -67,7 +68,7 @@ namespace MyLang
 
         public bool IsBinaryOperator => (Type == TokenType.Plus || Type == TokenType.Minus 
             || Type == TokenType.Star || Type == TokenType.Slash
-            || Type == TokenType.Left_parenthesis || Type == TokenType.Right_parenthesis
+            || Type == TokenType.LParenthesis || Type == TokenType.RParenthesis
             || Type == TokenType.Space);
     }
 
