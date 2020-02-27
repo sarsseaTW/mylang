@@ -114,12 +114,12 @@ class Program
         //{
         //    showHelpAndExit();
         //}
-        for(int i = 0; i < function_rest.Count; i++)
-        {
-            Console.WriteLine("------------------------function_rest " + i.ToString() + "--------------------------------");
-            Console.WriteLine("function_rest" + i.ToString() + " Val => " + function_rest[i]);
+        //for(int i = 0; i < function_rest.Count; i++)
+        //{
+        //    Console.WriteLine("------------------------function_rest " + i.ToString() + "--------------------------------");
+        //    Console.WriteLine("function_rest" + i.ToString() + " Val => " + function_rest[i]);
             
-        }
+        //}
         // 各実行器を用意する
         ITokenizer tokenizer = new SpaceSeparatedTokenizer();
         var parser = new Parser();
@@ -186,11 +186,11 @@ class Program
         string function_name = _input.Substring(functionName_L + 1, functionName_R - functionName_L - 1);
         string function_val = _input.Substring(block_L + 1, block_R - block_L - 1);
 
-        Console.WriteLine("-----getFunction Str----------------------------- ");
-        Console.WriteLine("-----Function Number => " + function_key_number);
-        Console.WriteLine("-----Function Name => " + function_name);
-        Console.WriteLine("-----Function Val => " + function_val);
-        Console.WriteLine("-----getFunction End----------------------------- \n");
+        //Console.WriteLine("-----getFunction Str----------------------------- ");
+        //Console.WriteLine("-----Function Number => " + function_key_number);
+        //Console.WriteLine("-----Function Name => " + function_name);
+        //Console.WriteLine("-----Function Val => " + function_val);
+        //Console.WriteLine("-----getFunction End----------------------------- \n");
 
         function_key[function_name] = function_val;
         function_number[function_key_number] = function_name;

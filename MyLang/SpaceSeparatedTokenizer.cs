@@ -174,7 +174,7 @@ namespace MyLang
                         dummy.Add(new Token(TokenType.Comma, ","));
                         break;
                     case "@":
-                        dummy.Add(new Token(TokenType.Inser, ","));
+                        dummy.Add(new Token(TokenType.Inser, "@"));
                         break;
                     case "{":
                         dummy.Add(new Token(TokenType.LBraket, "{"));

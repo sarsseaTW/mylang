@@ -42,6 +42,7 @@ namespace MyLang
             Semicolon, // ;
             LBraket, //{
             RBraket, //}
+            Inser, //@
         }
 
         /// <summary>
@@ -98,22 +99,6 @@ namespace MyLang
             }
         }
         /// ---------------------------------------------------------------------------------------------
-        public class ApplyFunction : Exp
-        {
-            public readonly Symbol Name;
-            public readonly Exp[] Args;
-            public ApplyFunction(Symbol name, Exp[] args)
-            {
-                Name = name;
-                Args = args;
-            }
-
-            public override Tuple<string, Ast[]> GetDisplayInfo()
-            {
-                return Tuple.Create("ApplyFunction", new Ast[] { Name }.Concat(Args).ToArray());
-            }
-        }
-        /// ---------------------------------------------------------------------------------------------
         public class Program : Ast
         {
             public readonly Statement[] Statements;
@@ -121,7 +106,7 @@ namespace MyLang
             public Program(IList<Statement> statements)
             {
                 Statements = statements.ToArray();
-                Console.WriteLine("Ast.cs      Ast.Program    " + Statements.Length.ToString());
+                //Console.WriteLine("Ast.cs      Ast.Program    " + Statements.Length.ToString());
             }
 
             public override Tuple<string, Ast[]> GetDisplayInfo()
@@ -130,7 +115,10 @@ namespace MyLang
             }
         }
         
-        public abstract class Statement : Ast { }
+        public abstract class Statement : Ast
+        {
+            
+        }
 
         public class LetStatement : Statement
         {
@@ -174,15 +162,32 @@ namespace MyLang
                 return Tuple.Create("return", new Ast[] { Exp });
             }
         }
+        /// ---------------------------------------------------------------------------------------------
+        public class VarFunctionStatement : Exp
+        {
+            public readonly Symbol Name;
+            public readonly Exp[] Args;
+            public VarFunctionStatement(Symbol name, Exp[] args)
+            {
+                Name = name;
+                Args = args;
+            }
 
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("ApplyFunction", new Ast[] { Name }.Concat(Args).ToArray());
+            }
+        }
         public class FunctionStatement : Statement
         {
             public readonly Symbol Name;
             public readonly Statement[] Body;
+            //public readonly Dictionary<string, float> Var = new Dictionary<string, float>();
             public FunctionStatement(Symbol name, IList<Statement> body)
             {
                 Name = name;
                 Body = body.ToArray();
+                //Console.WriteLine("body.Count()=>" + body.Count().ToString()); 
             }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {

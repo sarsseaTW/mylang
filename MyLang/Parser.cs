@@ -25,9 +25,11 @@ namespace MyLang
             {TokenType.RBraket, Ast.BinOpType.RBraket },  // '{'
         };
         #endregion
+        //------------------------------------------------------------------------------------------
         public Parser()
         {
         }
+        //------------------------------------------------------------------------------------------
         #region Utilities
         /// <summary>
         /// 現在のトークンを取得する
@@ -36,6 +38,10 @@ namespace MyLang
         Token currentToken()
         {
             return tokens_[pos_];
+        }
+        Token next_currentToken()
+        {
+            return tokens_[pos_+1];
         }
         /// <summary>
         /// 次のトークンに進む
@@ -55,6 +61,8 @@ namespace MyLang
             return tokenPos;
         }
         #endregion
+        //------------------------------------------------------------------------------------------
+        #region OtherParse
         public Ast.Ast Parse(IList<Token> tokens) //other
         {
             tokens_ = tokens;
@@ -63,6 +71,9 @@ namespace MyLang
             Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return statement();
         }
+        #endregion
+        //------------------------------------------------------------------------------------------
+        #region FunctionParse
         public Ast.Ast Function_Parse(IList<Token> tokens) // function
         {
             tokens_ = tokens;
@@ -78,9 +89,6 @@ namespace MyLang
             {
                 statement_group.Add(statement());
             }
-            var a = statement_group.ToArray();
-            int b = a.Length;
-            Console.WriteLine("--------------statement_program  " +  b.ToString()+"------------- ");
             return new Ast.Program(statement_group);
         }
         Ast.Statement[] Block()
@@ -99,6 +107,7 @@ namespace MyLang
 
             return statement_group.ToArray();
         }
+        #endregion
         //------------------------------------------------------------------------------------------
         #region statement
         Ast.Statement statement()
@@ -133,16 +142,12 @@ namespace MyLang
             progress();
             runToken(TokenType.Equal);//return =, pos++   
             var exp_val = exp();// 3
-
-            //runToken(TokenType.Semicolon);// ;
-
             return new Ast.LetStatement(symbol, exp_val);
         }
         Ast.Statement PrintStatement()// print a ; 
         {
             runToken(TokenType.Print);//return print, pos++
             var exp_val = exp();// a
-            //runToken(TokenType.Semicolon);// ;
             return new Ast.PrintStatement(exp_val);
         }
         Ast.Statement FunctionStatement()// function v{
@@ -153,20 +158,16 @@ namespace MyLang
             progress();
             runToken(TokenType.LBraket);//return {, pos++   
             var block_val = Block();// block
-
-            //runToken(TokenType.RBraket);// }
-
             return new Ast.FunctionStatement(symbol,block_val);
         }
         Ast.Statement ReturnStatement()// Return a ; 
         {
             runToken(TokenType.Return);//return Return, pos++
             var exp_val = exp();// a
-            //runToken(TokenType.Semicolon);// ;
             return new Ast.ReturnStatement(exp_val);
         }
         #endregion
-        //-------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------
         #region exp
 
         Ast.Exp exp()
@@ -239,20 +240,38 @@ namespace MyLang
             else if (tokenPos.IsSymbol)
             {
                 var name = new Ast.Symbol(tokenPos.Text);
-                if (currentToken().Type != TokenType.LParenthesis)//text = function name 
+                if (next_currentToken().Type != TokenType.LParenthesis)
                 {
                     progress();
                     return name;
                 }
                 else
                 {
+                    progress();
                     runToken(TokenType.LParenthesis);
                     var add = new List<Ast.Exp>();
-
-
+                    while (true)
+                    {
+                        add.Add(exp());
+                        if (currentToken().Type != TokenType.Comma)
+                        {
+                            break;
+                        }
+                        runToken(TokenType.Comma);
+                    }
                     runToken(TokenType.RParenthesis);
-                    return null; // return add(1+1+1+1+11+1);
+                    var a = add.ToArray();
+                    return new Ast.VarFunctionStatement(name, a); 
                 }
+            }
+            else if (tokenPos.Type == TokenType.Inser)
+            {
+                string str = tokenPos.Text;
+                runToken(TokenType.Inser);
+                tokenPos = currentToken();
+                str += tokenPos.Text;
+                progress();
+                return new Ast.Symbol(str);
             }
             else
                 return null;
