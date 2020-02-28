@@ -73,7 +73,27 @@ namespace MyLang
         }
         #endregion
         //------------------------------------------------------------------------------------------
-        #region FunctionParse
+        #region IF Parse 不確定暫時隱藏
+        //public Ast.Ast IF_Parse(IList<Token> tokens) // IF
+        //{
+        //    tokens_ = tokens;
+        //    pos_ = 0;
+        //    Console.WriteLine("Ast.Ast Parse ");
+        //    Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+        //    return IF_statement_program();
+        //}
+        //Ast.Program IF_statement_program() //這裡判斷結束條件 if elif else都要考慮
+        //{
+        //    var statement_group = new List<Ast.Statement>();
+        //    while (!currentToken().IsRBraket)
+        //    {
+        //        statement_group.Add(statement());
+        //    }
+        //    return new Ast.Program(statement_group);
+        //}
+        #endregion
+        //------------------------------------------------------------------------------------------
+        #region Function Parse
         public Ast.Ast Function_Parse(IList<Token> tokens) // function
         {
             tokens_ = tokens;
@@ -129,6 +149,10 @@ namespace MyLang
             {
                 return ReturnStatement();
             }
+            else if (tokenPos.Type == TokenType.IF)
+            {
+                return IFStatement();
+            }
             else
             {
                 return null;
@@ -150,6 +174,24 @@ namespace MyLang
             var exp_val = exp();// a
             return new Ast.PrintStatement(exp_val);
         }
+        Ast.Statement ReturnStatement()// Return a ; 
+        {
+            runToken(TokenType.Return);//return Return, pos++
+            var exp_val = exp();// a
+            return new Ast.ReturnStatement(exp_val);
+        }
+        Ast.Statement IFStatement()// if( a < 1 ){let a = 0;}elif(a > 2){let a = 0;}elif(a <= 999){let a = 0;}elif(a >= 889){let a = 0;}elif(a == 889){let a = 0;}else{let a = 0;}
+        {
+            runToken(TokenType.IF);//return if ,pos++      
+            runToken(TokenType.LParenthesis);//return ( ,pos++  
+            var select = exp(); // return true or false
+            progress();
+            runToken(TokenType.RParenthesis);//return ), pos++   
+            runToken(TokenType.LBraket);//return ), pos++  
+            var block_val = Block();// block
+            runToken(TokenType.RBraket);//return ), pos++  
+            return null;
+        }
         Ast.Statement FunctionStatement()// function v{
         {
             runToken(TokenType.Function);//return function ,pos++                    
@@ -159,12 +201,6 @@ namespace MyLang
             runToken(TokenType.LBraket);//return {, pos++   
             var block_val = Block();// block
             return new Ast.FunctionStatement(symbol,block_val);
-        }
-        Ast.Statement ReturnStatement()// Return a ; 
-        {
-            runToken(TokenType.Return);//return Return, pos++
-            var exp_val = exp();// a
-            return new Ast.ReturnStatement(exp_val);
         }
         #endregion
         //------------------------------------------------------------------------------------------

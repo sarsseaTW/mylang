@@ -16,8 +16,6 @@ namespace MyLang
         public string global_symbol_str = "";
         public Dictionary<string, float> function_symbol_dict = new Dictionary<string, float>();
         public string function_symbol_str = "";
-        //public Dictionary<string, Array> var_function_symbol_dict = new Dictionary<string, Array>();
-        //public string var_function_symbol_str = "";
         public Dictionary<string, Ast.Ast> function_body_dict = new Dictionary<string, Ast.Ast>();
         public string function_body_str = "";
 
@@ -45,11 +43,12 @@ namespace MyLang
                             Console.WriteLine("@"+i.ToString()+"----->" + local_symbol_dict["@" + i.ToString()]);
                         }
                         Run(function_body_dict[function_symbol_str]);
+                        local_symbol_dict.Clear();
                     }
                     else
                     {
                         Run(function_body_dict[VF.Name.Value]);
-                       // Console.WriteLine("Function Error");
+                        local_symbol_dict.Clear();
                     }
                 }
                 else

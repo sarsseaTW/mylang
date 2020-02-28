@@ -240,10 +240,14 @@ class Program
             // Parse を行う
             Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
             MyLang.Ast.Ast ast;
-            if(tokens[0].Type == TokenType.Function)
+            if(tokens[0].Type == TokenType.Function || tokens[0].Type == TokenType.IF)
             {
                 ast = parser.Function_Parse(tokens);
             }
+            //else if (tokens[0].Type == TokenType.IF)
+            //{
+            //    ast = parser.IF_Parse(tokens);
+            //}
             else
             {
                 ast = parser.Parse(tokens);

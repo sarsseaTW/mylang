@@ -194,7 +194,22 @@ namespace MyLang
                 return Tuple.Create("function", new Ast[] { Name, new AstList(Body) });
             }
         }
-
+        public class IFStatement : Statement
+        {
+            public readonly Symbol Name;
+            public readonly Statement[] Body;
+            //public readonly Dictionary<string, float> Var = new Dictionary<string, float>();
+            public IFStatement(Symbol name, IList<Statement> body)
+            {
+                Name = name;
+                Body = body.ToArray();
+                //Console.WriteLine("body.Count()=>" + body.Count().ToString()); 
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("IF", new Ast[] { Name, new AstList(Body) });
+            }
+        }
         public class AstList : Ast
         {
             public Ast[] List;
