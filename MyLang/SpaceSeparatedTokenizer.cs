@@ -57,6 +57,24 @@ namespace MyLang
                     any_2 = src[i + 1];
                 }
                 //　"//" を　取得している
+                if (any.ToString() == "=" && any_2.ToString() == "=")
+                {
+                    dummy.Add(new Token(TokenType.DoubleEqual, "=="));
+                    i++;
+                    continue;
+                }
+                if (any.ToString() == ">" && any_2.ToString() == "=")
+                {
+                    dummy.Add(new Token(TokenType.MoreEqual, ">="));
+                    i++;
+                    continue;
+                }
+                if (any.ToString() == "<" && any_2.ToString() == "=")
+                {
+                    dummy.Add(new Token(TokenType.LessEqual, "<="));
+                    i++;
+                    continue;
+                }
                 if (any.ToString() == "/" && any_2.ToString() == "/")
                 {
                     break;
@@ -102,6 +120,15 @@ namespace MyLang
                     {
                         switch (sum_eng.ToString())
                         {
+                            case "if":
+                                dummy.Add(new Token(TokenType.IF, "if"));
+                                break;
+                            case "elif":
+                                dummy.Add(new Token(TokenType.ELIF, "elif"));
+                                break;
+                            case "else":
+                                dummy.Add(new Token(TokenType.ELSE, "else"));
+                                break;
                             case "print":
                                 dummy.Add(new Token(TokenType.Print, "print"));
                                 break;
@@ -142,6 +169,12 @@ namespace MyLang
                 //　トークンの種類　を　取得している
                 switch (any.ToString())
                 {
+                    case "<":
+                        dummy.Add(new Token(TokenType.Less, "<"));
+                        break;
+                    case ">":
+                        dummy.Add(new Token(TokenType.More, ">"));
+                        break;
                     case "":
                         dummy.Add(new Token(TokenType.Space, ""));
                         break;

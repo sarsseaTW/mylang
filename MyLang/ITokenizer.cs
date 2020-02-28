@@ -34,8 +34,17 @@ namespace MyLang
         Return, // "return"
         Inser, // "@"
 
-    }
+        IF, // "if"
+        ELIF,// "ELIF"
+        ELSE, //"ELSE"
+        Less, // "<"
+        More, // ">"
+        LessEqual, // "<="
+        MoreEqual, // ">="
+        DoubleEqual, // "=="
 
+    }
+    
     /// <summary>
     /// トークン
     /// </summary>

@@ -16,6 +16,7 @@ class Program
     public static Dictionary<int, string> function_number = new Dictionary<int, string>();
     public static int function_key_number = 0;
     public static List<string> function_rest = new List<string>();
+    public static bool chk_is_else_break, chk_is_elif_break;
     static void Main()
     {
         bool tokenizeOnly = false; // tokenize だけで終わるかどうか
@@ -28,30 +29,22 @@ class Program
         bool chk_RBraket;
         bool chk_one_Braket;
         bool own_Semicolon;
+        bool chk_if_L, chk_if_R, chk_elif_L, chk_elif_R, chk_else_L, chk_else_R;
         string _input = "";
-
-        //string str_test = "function b{let b = 3  let hk = 5; let gk = 3  ;}";
-
-        //int functionName_L = str_test.IndexOf(" ");
-        //int functionName_R = str_test.LastIndexOf("{");
-        //int block_L = str_test.IndexOf("{");
-        //int block_R = str_test.LastIndexOf("}");
-        //Console.WriteLine(str_test.Substring(functionName_L + 1, functionName_R - functionName_L - 1));
-        //Console.WriteLine(str_test.Substring(block_L + 1, block_R - block_L - 1));
-        
         Console.WriteLine("--------------------Input----------------------------------");
         while (true)
         {
             _input = Console.ReadLine();
+            chk_if_L = Regex.IsMatch(_input, @"^(if)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))({)$");
             chk_LBraket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*({)[^A-Za-z0-9]*");
             chk_one_Braket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*[{][^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[}]$");
             own_Semicolon = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;][^A-Za-z0-9]*");
-            bool test = Regex.IsMatch(_input, @"(\})$");
+            bool test = Regex.IsMatch(_input, @"(\})(elif)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))(\{)$");
             if (_input.Equals("")) continue;
             if (_input.Equals("end") == false)
             {
-                //if(test) Console.WriteLine("-----------------GGGGGGGGGGGGGGGGGGGGGGEGEGEGE----------------------");
-                if (!own_Semicolon && !chk_LBraket)
+                //if (test) Console.WriteLine("-----------------GGGGGGGGGGGGGGGGGGGGGGEGEGEGE----------------------");
+                if (!own_Semicolon && !chk_LBraket && !chk_if_L)
                 {
                     _input += ";";
                 }
@@ -71,9 +64,106 @@ class Program
                 {
                     Logger.LogEnabled = true;
                 }
-                if(chk_one_Braket)
+                //--------------------------   IF   --------------------------------------------
+                if (chk_if_L)
                 {
-                    getFunction(_input);
+                    while (true)
+                    {
+                        //Console.WriteLine("-----------------it's IF while----------------------");
+                        string if_input = Console.ReadLine();
+
+                        own_Semicolon = Regex.IsMatch(if_input, "(;)$");// chk ";"
+                        chk_elif_L = Regex.IsMatch(if_input, @"(\})(elif)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))(\{)$"); // chk elif
+                        chk_else_L = Regex.IsMatch(if_input, @"(\})(else)(\{)$"); // chk else
+                        chk_if_R = Regex.IsMatch(if_input, @"(\})$"); // chk end if
+
+                        if (!own_Semicolon && !chk_if_R && !chk_elif_L && !chk_else_L)
+                        {
+                            if_input += ";";
+                        }
+                        _input += if_input;
+                        if (chk_else_L)
+                        {
+                            while (true)
+                            {
+                                //Console.WriteLine("-----------------it's ELSE while----------------------");
+                                string else_input = Console.ReadLine();
+
+                                own_Semicolon = Regex.IsMatch(else_input, "(;)$");// chk ;
+                                chk_else_R = Regex.IsMatch(else_input, @"(\})$");
+
+                                if (!own_Semicolon && !chk_else_R)
+                                {
+                                    else_input += ";";
+                                }
+                                _input += else_input;
+                                if (chk_else_R)
+                                {
+                                    chk_is_else_break = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (chk_elif_L)
+                        {
+                            while (true)
+                            {
+                                //Console.WriteLine("-----------------it's ELIF while----------------------");
+                                string elif_input = Console.ReadLine();
+
+                                own_Semicolon = Regex.IsMatch(elif_input, "(;)$");// chk ;
+                                chk_elif_L = Regex.IsMatch(elif_input, @"(\})(elif)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))(\{)$"); // chk elif
+                                chk_else_L = Regex.IsMatch(elif_input, @"(\})(else)(\{)$");
+                                chk_elif_R = Regex.IsMatch(elif_input, @"(\})$");
+
+                                if (!own_Semicolon && !chk_elif_R && !chk_else_L && !chk_elif_L)
+                                {
+                                    elif_input += ";";
+                                }
+                                _input += elif_input;
+                                if (chk_else_L)
+                                {
+                                    while (true)
+                                    {
+                                        //Console.WriteLine("-----------------it's ELSE while----------------------");
+                                        string else_input = Console.ReadLine();
+
+                                        own_Semicolon = Regex.IsMatch(else_input, "(;)$");// chk ;
+                                        chk_else_R = Regex.IsMatch(else_input, @"(\})$");
+
+                                        if (!own_Semicolon && !chk_else_R)
+                                        {
+                                            else_input += ";";
+                                        }
+                                        _input += else_input;
+                                        if (chk_else_R)
+                                        {
+                                            chk_is_else_break = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (chk_elif_R|| chk_is_else_break)
+                                {
+                                    chk_is_elif_break = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (chk_if_R || chk_is_else_break|| chk_is_elif_break)
+                        {
+                            chk_is_elif_break = false;
+                            chk_is_else_break = false;
+                            break;
+                        }
+                    }
+                }
+                //Console.WriteLine("-----------------it's Copy Input----------------------");
+                //Console.WriteLine(_input);
+                //--------------------------   Function   --------------------------------------------
+                if (chk_one_Braket)
+                {
                     rest.Insert(len++, _input);
                 }
                 else if (chk_LBraket)
@@ -81,7 +171,7 @@ class Program
                     while (true)
                     {
                         string Break_input = Console.ReadLine();
-                        own_Semicolon = Regex.IsMatch(Break_input,"(;)$");
+                        own_Semicolon = Regex.IsMatch(Break_input,"(;)$");// chk ;
                         chk_RBraket = Regex.IsMatch(Break_input, @"(\})$");
                         if (!own_Semicolon && !chk_RBraket)
                         {
@@ -94,7 +184,6 @@ class Program
                             break;
                         }
                     }
-                    getFunction(_input);
                     rest.Insert(len++, _input);
                 }
                 else
@@ -176,26 +265,6 @@ class Program
             
         }
         exit(0);
-    }
-    static void getFunction(string _input)
-    {
-        int functionName_L = _input.IndexOf(" ");
-        int functionName_R = _input.LastIndexOf("{");
-        int block_L = _input.IndexOf("{");
-        int block_R = _input.LastIndexOf("}");
-        string function_name = _input.Substring(functionName_L + 1, functionName_R - functionName_L - 1);
-        string function_val = _input.Substring(block_L + 1, block_R - block_L - 1);
-
-        //Console.WriteLine("-----getFunction Str----------------------------- ");
-        //Console.WriteLine("-----Function Number => " + function_key_number);
-        //Console.WriteLine("-----Function Name => " + function_name);
-        //Console.WriteLine("-----Function Val => " + function_val);
-        //Console.WriteLine("-----getFunction End----------------------------- \n");
-
-        function_key[function_name] = function_val;
-        function_number[function_key_number] = function_name;
-        function_rest.Insert(function_key_number, function_val);
-        function_key_number++;
     }
     /// <summary>
     /// ヘルプを表示して終わる
