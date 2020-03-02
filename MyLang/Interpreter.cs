@@ -41,6 +41,25 @@ namespace MyLang
                 Console.WriteLine("Ans => " + Run_exp(ast as Exp).ToString()); 
                 binop = false;
             }
+            if (ast is Ast.OtherStatement other)
+            {
+                for (int i = 0; i < other.Body.Length; i++)
+                {
+                    Run(other.Body[i]);
+                    if (i + 1 != other.Body.Length)
+                    {
+                        if (other.Body[i + 1].GetType().ToString() == "MyLang.Ast.ELIFStatement")
+                        {
+                            isElif = true;
+                            isElse = false;
+                        }
+                        else
+                        {
+                            isElif = false;
+                        }
+                    }
+                }
+            }
             if (ast is PrintStatement P)
             {
                 if(P.Exp is VarFunctionStatement VF)
@@ -97,13 +116,6 @@ namespace MyLang
                     global_symbol_str = "";
                 }
             }
-            if (ast is Ast.OtherStatement other)
-            {
-                for(int i = 0; i < other.Body.Length; i++)
-                {
-                    Run(other.Body[i]);
-                }
-            }
             if(ast is Ast.Program pg)
             {
                 isFunction = true;
@@ -114,18 +126,30 @@ namespace MyLang
 
                 function_statement(pg.Statements);
             }
-            if(ast is Ast.IFProgram ifpg)
+            if(ast is IFStatement ifs)
+            {
+                IF_Body(ifs);
+            }
+            else if(ast is ELIFStatement elifs)
+            {
+                if(isElif) ELIF_Body(elifs);
+            }
+            else if(ast is ELSEStatement elses)
+            {
+                if(isElse) ELSE_Body(elses);
+            }
+            if (ast is Ast.IFProgram ifpg)
             {
                 Statement[] if_st = ifpg.Statements;
                 for (int i = 0; i < if_st.Length; i++)
                 {
                     if (isEnd) break;
                     //Console.WriteLine("Statement[" +i.ToString()+"] => "+ if_st[i].GetType());
-                    if(if_st[i].GetType().ToString() == "MyLang.Ast.IFStatement")
+                    if (if_st[i].GetType().ToString() == "MyLang.Ast.IFStatement")
                     {
                         IF_Body(if_st[i]);
                     }
-                    else if(if_st[i].GetType().ToString() == "MyLang.Ast.ELIFStatement")
+                    else if (if_st[i].GetType().ToString() == "MyLang.Ast.ELIFStatement")
                     {
                         if (isElif)
                         {
@@ -133,11 +157,11 @@ namespace MyLang
                             //break;
                         }
                     }
-                    else if(if_st[i].GetType().ToString() == "MyLang.Ast.ELSEStatement")
+                    else if (if_st[i].GetType().ToString() == "MyLang.Ast.ELSEStatement")
                     {
                         if (isElse) ELSE_Body(if_st[i]);
                     }
-                    if(i+1 != if_st.Length)
+                    if (i + 1 != if_st.Length)
                     {
                         if (if_st[i + 1].GetType().ToString() == "MyLang.Ast.ELIFStatement")
                         {
@@ -181,6 +205,7 @@ namespace MyLang
                 Run(else_ifst.Body[i]);
             }
             local_symbol_dict.Clear();
+            isElse = false;
         }
         void IF_Body(Statement IFB)
         {
@@ -196,7 +221,11 @@ namespace MyLang
                 isIF_body = false;
                 local_symbol_dict.Clear();
             }
-            else isElse = true;
+            else
+            {
+                isElse = true;
+                isElif = true;
+            }
         }
         void function_statement(Statement[] f_st)
         {
@@ -284,14 +313,23 @@ namespace MyLang
                 float found;
                 if (isFunction||isIF_body || isElif_body || isElse)
                 {
-                    if (local_symbol_dict.TryGetValue(num.Value, out found))
+                    if (global_symbol_dict.TryGetValue(num.Value, out found))
                     {
                         return found;
                     }
                     else
                     {
-                        local_symbol_dict[local_symbol_str] = 0;
-                        return local_symbol_dict[local_symbol_str];
+                        if (local_symbol_dict.TryGetValue(num.Value, out found))
+                        {
+                            return found;
+                        }
+                        else
+                        {
+                            local_symbol_dict[local_symbol_str] = 0;
+                            global_symbol_str = num.Value;
+                            global_symbol_dict[global_symbol_str] = 0;
+                            return local_symbol_dict[local_symbol_str];
+                        }
                     }
                 }
                 else

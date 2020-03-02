@@ -30,6 +30,7 @@ namespace MyLang
             {TokenType.DoubleEqual, Ast.BinOpType.DoubleEqual },  // '=='
         };
         private int _pos;
+        public Ast.Statement stat;
         #endregion
         //------------------------------------------------------------------------------------------
         public Parser()
@@ -96,15 +97,16 @@ namespace MyLang
             //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return aa();
         }
-        Ast.Program Other_program()
-        {
-            var statement_group = new List<Ast.Statement>();
-            while (!currentToken().IsSemicolon)
-            {
-                statement_group.Add(aa());
-            }
-            return new Ast.Program(statement_group);
-        }
+        //Ast.Program Other_program()
+        //{
+        //    var statement_group = new List<Ast.Statement>();
+        //    while (!currentToken().IsSemicolon)
+        //    {
+        //        if(currentToken().Type == TokenType.IF) { /*return IF_statement_program();*/ }
+        //        statement_group.Add(aa());
+        //    }
+        //    return new Ast.Program(statement_group);
+        //}
         Ast.Statement aa()
         {
             var block_val = Other_Block();// block
@@ -115,7 +117,8 @@ namespace MyLang
             var statement_group = new List<Ast.Statement>();
             while (true)
             {
-                var stat = statement();
+                var tok = currentToken();
+                stat = statement();
                 if (stat == null)
                 {
                     break;
@@ -143,9 +146,11 @@ namespace MyLang
         {
             var IF_statement_group = new List<Ast.Statement>();
             var ELSE_statement_group = new List<Ast.Statement>();
-            while (!currentToken().IsRBraket && !currentToken().IsTerminate)
+            var tok = currentToken();
+            while (!tok.IsRBraket)
             {
                 IF_statement_group.Add(statement());
+                tok = currentToken();
             }
             while(next_currentToken().Type == TokenType.ELIF)
             {

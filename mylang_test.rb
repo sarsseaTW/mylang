@@ -97,9 +97,19 @@ def test_Print
 end
 def test_IF
   testcases = [
-    ["let a = 21 * 2 * 3; if(a>0){print a;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"]
+    ["let a = 21 * 2 * 3; if(a>0){print a;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"],#if
+	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a > 0){ print a + 2 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 128"],#elif
+	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a < 0){ print a + 2 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 127"],#else
+	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a < 0){ print a + 2 ;}elif( a > 0){ print a + 100 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 226"]
   ]
-  puts "** Testing Print ..."
+  puts "** Testing IF ..."
+  run_test(testcases, [MY_LANG_EXE])
+end
+def test_Function
+  testcases = [
+    ["let a = 21 * 2 * 3; print a;", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"]
+  ]
+  puts "** Testing Function ..."
   run_test(testcases, [MY_LANG_EXE])
 end
 

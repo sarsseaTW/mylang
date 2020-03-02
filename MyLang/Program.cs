@@ -266,15 +266,15 @@ class Program
             // Parse を行う
             //Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
             MyLang.Ast.Ast ast;
-            if(tokens[0].Type == TokenType.Function)
-            {
-                ast = parser.Function_Parse(tokens);
-            }
-            else if (tokens[0].Type == TokenType.IF)
-            {
-                ast = parser.IF_Parse(tokens);
-            }
-            else if (tokens[0].Type == TokenType.Number || tokens[0].Type == TokenType.Symbol)
+            //if(tokens[0].Type == TokenType.Function)
+            //{
+            //    ast = parser.Function_Parse(tokens);
+            //}
+            //else if (tokens[0].Type == TokenType.IF)
+            //{
+            //    ast = parser.IF_Parse(tokens);
+            //}
+            if (tokens[0].Type == TokenType.Number || tokens[0].Type == TokenType.Symbol)
             {
                 ast = parser.NS_Parse(tokens);
             }
@@ -282,7 +282,7 @@ class Program
             {
                 ast = parser.Parse(tokens);
             }
-            
+            //ast = parser.Parse(tokens);
 
             if (parseOnly)
             {
