@@ -8,10 +8,12 @@ def run_test(testcases, cmd)
   total = 0
   success = 0
 
-  #Ruby 迭代器
   testcases.each do |input, expected_output|
     total += 1
     output, status = Open3.capture2e(*cmd, input)
+	puts input
+	puts output
+	puts status
     output.strip!
 
     if status.exitstatus != 0
@@ -36,9 +38,9 @@ end
 
 def test_tokenizer
   testcases = [
-    ["-t\nlet a = 1\nend", "let a = 1 ;"],
-    ["1 + 2", "1 + 2 ;"],
-    ["1   +   2", "1 + 2 ;"],
+    #["1", "1 ;"],
+    #["1 + 2", "1 + 2 ;"],
+    #["1   +   2", "1 + 2 ;"],
     ["1   +  2 * 3", "1 + 2 * 3 ;"],
     #["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
     #["a + b", "a + b [EOF]"], # Symbolも対応する
