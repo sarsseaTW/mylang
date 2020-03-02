@@ -34,7 +34,8 @@ namespace MyLang
             // TODO: 仮のダミー実装
             //Console.WriteLine(ast.GetType().ToString());
             //Console.WriteLine(new AstDisplayer().BuildString(ast, false));
-            if(ast.GetType().ToString() == "MyLang.Ast.BinOp")
+            if(ast.GetType().ToString() == "MyLang.Ast.BinOp" || ast.GetType().ToString() == "MyLang.Ast.Number" 
+                || ast.GetType().ToString() == "MyLang.Ast.Symbol")
             {
                 binop = true;
                 Console.WriteLine("Ans => " + Run_exp(ast as Exp).ToString()); 
@@ -55,7 +56,7 @@ namespace MyLang
                         for (int i = 0; i < VF.Args.Length; i++)
                         {
                             local_symbol_dict["@" + i.ToString()] = Run_exp(VF.Args[i]);
-                            Console.WriteLine("@"+i.ToString()+"----->" + local_symbol_dict["@" + i.ToString()]);
+                            //Console.WriteLine("@"+i.ToString()+"----->" + local_symbol_dict["@" + i.ToString()]);
                         }
                         Run(function_body_dict[function_symbol_str]);
                         local_symbol_dict.Clear();
@@ -68,7 +69,7 @@ namespace MyLang
                 }
                 else
                 {
-                    Console.WriteLine("Run_exp(P.Exp) =>" + Run_exp(P.Exp));
+                    Console.WriteLine("Run_exp(P.Exp) => " + Run_exp(P.Exp));
                 }
             }
             if (ast is ReturnStatement R)
@@ -76,7 +77,7 @@ namespace MyLang
                 if (isFunction)
                 {
                     function_symbol_dict[function_symbol_str] = Run_exp(R.Exp);
-                    Console.WriteLine("Run_exp(R.Exp) =>" + Run_exp(R.Exp));
+                    //Console.WriteLine("Run_exp(R.Exp) => " + Run_exp(R.Exp));
                 }
             }
             if (ast is LetStatement L)
@@ -84,16 +85,23 @@ namespace MyLang
                 if (isFunction || isIF_body || isElse || isElif_body)
                 {
                     local_symbol_str = L.Variable.Value;
-                    Console.WriteLine("Run_exp(L.Exp) =>" + Run_exp(L.Exp));
+                    //Console.WriteLine("Run_exp(L.Exp) => " + Run_exp(L.Exp));
                     local_symbol_dict[local_symbol_str] = Run_exp(L.Exp);
                     local_symbol_str = "";
                 }
                 else
                 {
                     global_symbol_str = L.Variable.Value;
-                    Console.WriteLine("Run_exp(L.Exp) =>" + Run_exp(L.Exp));
+                    Console.WriteLine("Run_exp(L.Exp) => " + Run_exp(L.Exp));
                     global_symbol_dict[global_symbol_str] = Run_exp(L.Exp);
                     global_symbol_str = "";
+                }
+            }
+            if (ast is Ast.OtherStatement other)
+            {
+                for(int i = 0; i < other.Body.Length; i++)
+                {
+                    Run(other.Body[i]);
                 }
             }
             if(ast is Ast.Program pg)

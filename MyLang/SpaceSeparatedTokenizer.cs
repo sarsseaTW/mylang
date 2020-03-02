@@ -218,8 +218,8 @@ namespace MyLang
                 dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
             }
             #endregion 
-            Console.WriteLine("Token");
-            Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");
+            //Console.WriteLine("Token");
+            //Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");
             return dummy;
         }
 

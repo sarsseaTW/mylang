@@ -10,7 +10,7 @@ namespace MyLang
     {
         #region Var
         IList<Token> tokens_;
-        int pos_ = 0;
+        public static int pos_ = 0;
         bool is_function = false;
         static Dictionary<TokenType, Ast.BinOpType> BinOpMap = new Dictionary<TokenType, Ast.BinOpType>
         {
@@ -29,6 +29,7 @@ namespace MyLang
             {TokenType.MoreEqual, Ast.BinOpType.MoreEqual },  // '>='
             {TokenType.DoubleEqual, Ast.BinOpType.DoubleEqual },  // '=='
         };
+        private int _pos;
         #endregion
         //------------------------------------------------------------------------------------------
         public Parser()
@@ -76,12 +77,12 @@ namespace MyLang
         #endregion
         //------------------------------------------------------------------------------------------
         #region Number and Symbol Parse
-        public Ast.Ast NS_Parse(IList<Token> tokens) //other
+        public Ast.Ast NS_Parse(IList<Token> tokens) //Number and Symbol Parse
         {
             tokens_ = tokens;
             pos_ = 0;
-            Console.WriteLine("Ast.Ast NS_Parse \n");
-            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+           // Console.WriteLine("Ast.Ast NS_Parse \n");
+            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return exp();
         }
         #endregion
@@ -91,9 +92,41 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-            Console.WriteLine("Ast.Ast Parse \n");
-            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
-            return statement();
+            //Console.WriteLine("Ast.Ast Parse \n");
+            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+            return aa();
+        }
+        Ast.Program Other_program()
+        {
+            var statement_group = new List<Ast.Statement>();
+            while (!currentToken().IsSemicolon)
+            {
+                statement_group.Add(aa());
+            }
+            return new Ast.Program(statement_group);
+        }
+        Ast.Statement aa()
+        {
+            var block_val = Other_Block();// block
+            return new Ast.OtherStatement(block_val);
+        }
+        Ast.Statement[] Other_Block()
+        {
+            var statement_group = new List<Ast.Statement>();
+            while (true)
+            {
+                var stat = statement();
+                if (stat == null)
+                {
+                    break;
+                }
+                statement_group.Add(stat);
+                if(pos_ != tokens_.Count - 1)
+                {
+                    progress();
+                }
+            }
+            return statement_group.ToArray();
         }
         #endregion
         //------------------------------------------------------------------------------------------
@@ -102,8 +135,8 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-            Console.WriteLine("Ast.Ast IF_Parse \n");
-            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+            //Console.WriteLine("Ast.Ast IF_Parse \n");
+            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return IF_statement_program();
         }
         Ast.IFProgram IF_statement_program() //這裡判斷結束條件 if elif else都要考慮
@@ -145,8 +178,8 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-            Console.WriteLine("Ast.Ast Function_Parse ");
-            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+            //Console.WriteLine("Ast.Ast Function_Parse ");
+            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return statement_program();
         }
         Ast.Program statement_program()
@@ -297,7 +330,7 @@ namespace MyLang
                 || tokenPos.Type == TokenType.DoubleEqual)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
-                Console.WriteLine(now_tokenBioMap.ToString() + "        exp1_realArea ");
+                //Console.WriteLine(now_tokenBioMap.ToString() + "        exp1_realArea ");
                 progress();
                 var right_hs = exp2();
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: a>1
@@ -323,7 +356,7 @@ namespace MyLang
             if (tokenPos.Type == TokenType.Plus || tokenPos.Type == TokenType.Minus)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
-                Console.WriteLine(now_tokenBioMap.ToString() + "        exp2_realArea ");
+                //Console.WriteLine(now_tokenBioMap.ToString() + "        exp2_realArea ");
                 progress();
                 var right_hs = exp3();
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1+4+8-82+5
@@ -349,7 +382,7 @@ namespace MyLang
             if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
-                Console.WriteLine(now_tokenBioMap.ToString() + "        exp3_realArea ");
+                //Console.WriteLine(now_tokenBioMap.ToString() + "        exp3_realArea ");
                 progress();
                 var right_hs = expVal();
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
@@ -367,7 +400,7 @@ namespace MyLang
             {
                 progress();
 
-                Console.WriteLine("\n" + tokenPos.Text + "            IsNumber tokenPos.ToString\n");
+                //Console.WriteLine("\n" + tokenPos.Text + "            IsNumber tokenPos.ToString\n");
 
                 return new Ast.Number(float.Parse(tokenPos.Text));
             }

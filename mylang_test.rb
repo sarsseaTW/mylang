@@ -11,36 +11,36 @@ def run_test(testcases, cmd)
   testcases.each do |input, expected_output|
     total += 1
     output, status = Open3.capture2e(*cmd, input)
-	puts input
-	puts output
-	puts status
+	#puts "output => #{output}\n"
+	#puts "status => #{status}\n"
     output.strip!
 
     if status.exitstatus != 0
-      puts "ERROR: #{input}"
+      puts "ERROR: #{input}\n"
       next
     end
     
     if output != expected_output.to_s
-      puts "NG: #{input} => #{output}, but expect #{expected_output}"
+      puts "NG: #{input} => #{output}, but expect #{expected_output}\n"
     else
       success += 1
-      puts "OK: #{input} => #{output}"
+      #puts "OK: #{input} => #{output}\n"
+	  print "."
     end
   end
   if total == success
-    puts "OK: #{total} testcases passed"
+    puts "\nOK: #{total} testcases passed\n"
   else
-    puts "ERR: #{total-success} testcases failed"
+    puts "\nERR: #{total-success} testcases failed\n"
     raise
   end
 end
 
 def test_tokenizer
   testcases = [
-    #["1", "1 ;"],
-    #["1 + 2", "1 + 2 ;"],
-    #["1   +   2", "1 + 2 ;"],
+    ["1", "1 ;"],
+    ["1 + 2", "1 + 2 ;"],
+    ["1   +   2", "1 + 2 ;"],
     ["1   +  2 * 3", "1 + 2 * 3 ;"],
     #["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
     #["a + b", "a + b [EOF]"], # Symbolも対応する
@@ -66,17 +66,52 @@ end
 
 def test_interpreter
   testcases = [
-    ["1", 1],
-    ["1 + 2", 3],
-    ["2 * 3", 6],
-    ["1 + 2 * 3", 7],
-    ["1 + 2 + 3", 6],
-    ["1 * 2 * 3", 6],
+    ["1", "Ans => 1"],
+    ["1 + 2", "Ans => 3"],
+    ["2 * 3", "Ans => 6"],
+    ["1 + 2 * 3", "Ans => 7"],
+    ["1 + 2 + 3", "Ans => 6"],
+    ["1 * 2 * 3", "Ans => 6"],
   ]
   puts "** Testing Interpreter ..."
   run_test(testcases, [MY_LANG_EXE])
 end
+def test_Let
+  testcases = [
+    ["let a = 2", "Run_exp(L.Exp) => 2"],
+    ["let a = 21 + 2", "Run_exp(L.Exp) => 23"],
+    ["let a = 22 * 3", "Run_exp(L.Exp) => 66"],
+    ["let a = 21 + 2 * 3", "Run_exp(L.Exp) => 27"],
+    ["let a = 21 + 2 + 3", "Run_exp(L.Exp) => 26"],
+    ["let a = 21 * 2 * 3", "Run_exp(L.Exp) => 126"],
+  ]
+  puts "** Testing Let ..."
+  run_test(testcases, [MY_LANG_EXE])
+end
+def test_Print
+  testcases = [
+    ["let a = 21 * 2 * 3; print a;", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"]
+  ]
+  puts "** Testing Print ..."
+  run_test(testcases, [MY_LANG_EXE])
+end
+def test_IF
+  testcases = [
+    ["let a = 21 * 2 * 3; if(a>0){print a;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"]
+  ]
+  puts "** Testing Print ..."
+  run_test(testcases, [MY_LANG_EXE])
+end
 
 test_tokenizer
+puts "\n"
 test_parser
+puts "\n"
 test_interpreter
+puts "\n"
+test_Let
+puts "\n"
+test_Print
+puts "\n"
+test_IF
+puts "\n"

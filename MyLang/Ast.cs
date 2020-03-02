@@ -257,6 +257,18 @@ namespace MyLang
                 return Tuple.Create("ELIF", new Ast[] { new AstList(Body) });
             }
         }
+        public class OtherStatement : Statement
+        {
+            public readonly Statement[] Body;
+            public OtherStatement(IList<Statement> body)
+            {
+                Body = body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("OtherStatement", new Ast[] { new AstList(Body) });
+            }
+        }
         public class AstList : Ast
         {
             public Ast[] List;

@@ -19,7 +19,7 @@ class Program
     public static List<string> function_rest = new List<string>();
     public static bool chk_is_else_break, chk_is_elif_break;
     #endregion
-    static void Main()
+    static void Main(string[] args)
     {
         //------------------------------------------------------------------------------------------
         #region LVar
@@ -33,28 +33,51 @@ class Program
         bool chk_one_Braket;
         bool own_Semicolon;
         bool chk_if_L, chk_if_R, chk_elif_L, chk_elif_R, chk_else_L, chk_else_R;
+        bool end;
         string _input = "";
-        #endregion 
+        #endregion
         //------------------------------------------------------------------------------------------
+        
         #region Input
-        Console.WriteLine("--------------------Input----------------------------------");
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == "-t" || args[i] == "--tokenize")
+            {
+                tokenizeOnly = true;
+                continue;
+            }
+            else if (args[i] == "-p" || args[i] == "--parse")
+            {
+                parseOnly = true;
+                continue;
+            }
+            if (i != 0)
+            {
+                _input += " ";
+            }
+            _input += args[i];
+            
+        }
+        //Console.WriteLine("--------------------Input----------------------------------");
         while (true)
         {
-            _input = Console.ReadLine();
+            //Console.WriteLine(_input);
+            // _input = Console.ReadLine();
             chk_if_L = Regex.IsMatch(_input, @"^(if)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))({)$");
             chk_LBraket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*({)[^A-Za-z0-9]*");
             chk_one_Braket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*[{][^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[}]$");
             own_Semicolon = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;][^A-Za-z0-9]*");
-            bool test = Regex.IsMatch(_input, @"(\})(elif)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))(\{)$");
+            end = Regex.IsMatch(_input, @"(end)[^A-Za-z0-9]*");
+            bool test = Regex.IsMatch(_input, @"(end)[^A-Za-z0-9]*");
             if (_input.Equals("")) continue;
-            if (_input.Equals("end") == false)
+            if (end == false)
             {
                 //if (test) Console.WriteLine("-----------------GGGGGGGGGGGGGGGGGGGGGGEGEGEGE----------------------");
                 if (!own_Semicolon && !chk_LBraket && !chk_if_L)
                 {
                     _input += ";";
                 }
-                if(_input.Equals("-h;") || _input.Equals("--help;"))
+                if (_input.Equals("-h;") || _input.Equals("--help;"))
                 {
                     showHelpAndExit();
                     continue;
@@ -153,15 +176,15 @@ class Program
                                         }
                                     }
                                 }
-                                if (chk_elif_R|| chk_is_else_break)
+                                if (chk_elif_R || chk_is_else_break)
                                 {
                                     chk_is_elif_break = true;
                                     break;
                                 }
                             }
                         }
-                        
-                        if (chk_if_R || chk_is_else_break|| chk_is_elif_break)
+
+                        if (chk_if_R || chk_is_else_break || chk_is_elif_break)
                         {
                             chk_is_elif_break = false;
                             chk_is_else_break = false;
@@ -181,7 +204,7 @@ class Program
                     while (true)
                     {
                         string Break_input = Console.ReadLine();
-                        own_Semicolon = Regex.IsMatch(Break_input,"(;)$");// chk ;
+                        own_Semicolon = Regex.IsMatch(Break_input, "(;)$");// chk ;
                         chk_RBraket = Regex.IsMatch(Break_input, @"(\})$");
                         if (!own_Semicolon && !chk_RBraket)
                         {
@@ -206,8 +229,9 @@ class Program
                 break;
             }
             _input = "";
+            break;
         }
-        Console.WriteLine("------------------------End--------------------------------\n");
+        //Console.WriteLine("------------------------End--------------------------------\n");
         #endregion        
         //------------------------------------------------------------------------------------------
         #region Run
@@ -218,16 +242,16 @@ class Program
         
         for (int i = 0; i< rest.Count; i++)
         {
-            Console.WriteLine("------------------------Token" + i.ToString() + "--------------------------------");
-            Console.WriteLine("rest [" + i.ToString() + "]");
-            Console.WriteLine(rest[i] + "\n");
+            //Console.WriteLine("------------------------Token" + i.ToString() + "--------------------------------");
+            //Console.WriteLine("rest [" + i.ToString() + "]");
+            //Console.WriteLine(rest[i] + "\n");
 
             // Tokenize を行う
             var tokens = tokenizer.Tokenize(rest[i].ToString());
-            for(int j = 0; j < tokens.Count; j++)
-            {
-                Console.WriteLine("No."+i.ToString()+"   tokens [" + j.ToString() + "]    " + tokens[j].Type + "\n");
-            }
+            //for(int j = 0; j < tokens.Count; j++)
+            //{
+            //    Console.WriteLine("No."+i.ToString()+"   tokens [" + j.ToString() + "]    " + tokens[j].Type + "\n");
+            //}
             //if(tokens[0].Type == TokenType.Function) Console.WriteLine("it's function");
             if (tokenizeOnly)
             {
@@ -240,7 +264,7 @@ class Program
             }
 
             // Parse を行う
-            Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
+            //Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
             MyLang.Ast.Ast ast;
             if(tokens[0].Type == TokenType.Function)
             {
@@ -271,7 +295,7 @@ class Program
             }
 
             // Interpreter で実行する
-            Console.WriteLine("--------------Interpreter" + i.ToString() + "------------- ");
+            //Console.WriteLine("--------------Interpreter" + i.ToString() + "------------- ");
             interpreter.Run(ast);
             
         }
