@@ -43,6 +43,11 @@ namespace MyLang
             LBraket, //{
             RBraket, //}
             Inser, //@
+            Less, // <
+            More, // >
+            LessEqual, // <=
+            MoreEqual, // >=
+            DoubleEqual, // ==
         }
 
         /// <summary>
@@ -114,7 +119,20 @@ namespace MyLang
                 return Tuple.Create("Program", Statements.Select(s => (Ast)s).ToArray());
             }
         }
-        
+        public class IFProgram : Ast
+        {
+            public readonly Statement[] Statements;
+
+            public IFProgram(IList<Statement> statements)
+            {
+                Statements = statements.ToArray();
+            }
+
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("IFProgram", Statements.Select(s => (Ast)s).ToArray());
+            }
+        }
         public abstract class Statement : Ast
         {
             
@@ -196,18 +214,47 @@ namespace MyLang
         }
         public class IFStatement : Statement
         {
-            public readonly Symbol Name;
             public readonly Statement[] Body;
-            //public readonly Dictionary<string, float> Var = new Dictionary<string, float>();
-            public IFStatement(Symbol name, IList<Statement> body)
+            public readonly Exp SelectBody;
+            public readonly Dictionary<Exp, Statement[]> Var = new Dictionary<Exp, Statement[]>();
+            public IFStatement(Exp selectBody, IList<Statement> body)
             {
-                Name = name;
+                SelectBody = selectBody;
                 Body = body.ToArray();
+                Var[SelectBody] = Body;
                 //Console.WriteLine("body.Count()=>" + body.Count().ToString()); 
             }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {
-                return Tuple.Create("IF", new Ast[] { Name, new AstList(Body) });
+                return Tuple.Create("IF", new Ast[] { SelectBody, new AstList(Body) });
+            }
+        }
+        public class ELIFStatement : Statement
+        {
+            public readonly Statement[] Body;
+            public readonly Exp SelectBody;
+            public readonly Dictionary<Exp, Statement[]> Var = new Dictionary<Exp, Statement[]>();
+            public ELIFStatement(Exp selectBody, IList<Statement> body)
+            {
+                SelectBody = selectBody;
+                Body = body.ToArray();
+                Var[SelectBody] = Body;
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("IF", new Ast[] { SelectBody, new AstList(Body) });
+            }
+        }
+        public class ELSEStatement : Statement
+        {
+            public readonly Statement[] Body;
+            public ELSEStatement(IList<Statement> body)
+            {
+                Body = body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("ELIF", new Ast[] { new AstList(Body) });
             }
         }
         public class AstList : Ast

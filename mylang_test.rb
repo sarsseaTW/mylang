@@ -8,6 +8,7 @@ def run_test(testcases, cmd)
   total = 0
   success = 0
 
+  #Ruby 迭代器
   testcases.each do |input, expected_output|
     total += 1
     output, status = Open3.capture2e(*cmd, input)
@@ -35,16 +36,16 @@ end
 
 def test_tokenizer
   testcases = [
-    ["1", "1 [EOF]"],
-    ["1 + 2", "1 + 2 [EOF]"],
-    ["1   +   2", "1 + 2 [EOF]"],
-    ["1   +  2 * 3", "1 + 2 * 3 [EOF]"],
+    ["-t\nlet a = 1\nend", "let a = 1 ;"],
+    ["1 + 2", "1 + 2 ;"],
+    ["1   +   2", "1 + 2 ;"],
+    ["1   +  2 * 3", "1 + 2 * 3 ;"],
     #["1+2", "1 + 2 [EOF]"], # スペースがなくても、Tokenizeできるようにする
     #["a + b", "a + b [EOF]"], # Symbolも対応する
     #["(1 + 2) * 3", "( 1 + 2 ) [EOF]"], # "(", ")" に対応する
   ]
   puts "** Testing Tokenizer ..."
-  run_test(testcases, [MY_LANG_EXE, '--tokenize'])
+  run_test(testcases, [MY_LANG_EXE, '-t'])
 end
 
 
@@ -58,7 +59,7 @@ def test_parser
     ["1 * 2 * 3", "Multiply( Multiply( 1 2 ) 3 )"],
   ]
   puts "** Testing Parser ..."
-  run_test(testcases, [MY_LANG_EXE, '--parse'])
+  run_test(testcases, [MY_LANG_EXE, '-p'])
 end
 
 def test_interpreter

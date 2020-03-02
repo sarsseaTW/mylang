@@ -20,16 +20,7 @@ namespace MyLang
 
         public IList<Token> Tokenize(string src)
         {
-
-            //Console.WriteLine("rest to array");
-            //Console.WriteLine(src + " \n");
-            //Console.WriteLine("src length");
-            //Console.WriteLine(src.Length + " \n");
-            /* Console.WriteLine("src[0]");
-             Console.WriteLine(src[0] + " \n");
-             Console.WriteLine("src[11]");
-             Console.WriteLine(src[11] + " \n");*/
-
+            #region Var
             // TODO: 仮のダミー実装
             var dummy = new List<Token>();
 
@@ -40,7 +31,8 @@ namespace MyLang
             string sum_int = "";
             string sum_eng = "";
             bool sem_tf = false;
-            
+            #endregion
+            #region Token
             for (int i = 0; i < src.Length; i++)
             {
                 // 初めステータス　を　設定
@@ -225,6 +217,7 @@ namespace MyLang
             {
                 dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
             }
+            #endregion 
             Console.WriteLine("Token");
             Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");
             return dummy;

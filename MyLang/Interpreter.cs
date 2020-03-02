@@ -10,6 +10,7 @@ namespace MyLang
         public Interpreter()
         {
         }
+        #region Var
         public Dictionary<string, float> local_symbol_dict = new Dictionary<string, float>();
         public string local_symbol_str = "";
         public Dictionary<string, float> global_symbol_dict = new Dictionary<string, float>();
@@ -20,11 +21,25 @@ namespace MyLang
         public string function_body_str = "";
 
         bool isFunction = false;
-
+        bool isIF_body = false;
+        bool isElse = false;
+        bool isElif = false;
+        bool isElif_body = false;
+        bool isEnd = false;
+        bool binop = false;
+        #endregion
+        #region Run
         public void Run(Ast.Ast ast)
         {
             // TODO: 仮のダミー実装
+            //Console.WriteLine(ast.GetType().ToString());
             //Console.WriteLine(new AstDisplayer().BuildString(ast, false));
+            if(ast.GetType().ToString() == "MyLang.Ast.BinOp")
+            {
+                binop = true;
+                Console.WriteLine("Ans => " + Run_exp(ast as Exp).ToString()); 
+                binop = false;
+            }
             if (ast is PrintStatement P)
             {
                 if(P.Exp is VarFunctionStatement VF)
@@ -66,16 +81,18 @@ namespace MyLang
             }
             if (ast is LetStatement L)
             {
-                if (isFunction)
+                if (isFunction || isIF_body || isElse || isElif_body)
                 {
                     local_symbol_str = L.Variable.Value;
                     Console.WriteLine("Run_exp(L.Exp) =>" + Run_exp(L.Exp));
+                    local_symbol_dict[local_symbol_str] = Run_exp(L.Exp);
                     local_symbol_str = "";
                 }
                 else
                 {
                     global_symbol_str = L.Variable.Value;
                     Console.WriteLine("Run_exp(L.Exp) =>" + Run_exp(L.Exp));
+                    global_symbol_dict[global_symbol_str] = Run_exp(L.Exp);
                     global_symbol_str = "";
                 }
             }
@@ -89,6 +106,89 @@ namespace MyLang
 
                 function_statement(pg.Statements);
             }
+            if(ast is Ast.IFProgram ifpg)
+            {
+                Statement[] if_st = ifpg.Statements;
+                for (int i = 0; i < if_st.Length; i++)
+                {
+                    if (isEnd) break;
+                    //Console.WriteLine("Statement[" +i.ToString()+"] => "+ if_st[i].GetType());
+                    if(if_st[i].GetType().ToString() == "MyLang.Ast.IFStatement")
+                    {
+                        IF_Body(if_st[i]);
+                    }
+                    else if(if_st[i].GetType().ToString() == "MyLang.Ast.ELIFStatement")
+                    {
+                        if (isElif)
+                        {
+                            ELIF_Body(if_st[i]);
+                            //break;
+                        }
+                    }
+                    else if(if_st[i].GetType().ToString() == "MyLang.Ast.ELSEStatement")
+                    {
+                        if (isElse) ELSE_Body(if_st[i]);
+                    }
+                    if(i+1 != if_st.Length)
+                    {
+                        if (if_st[i + 1].GetType().ToString() == "MyLang.Ast.ELIFStatement")
+                        {
+                            isElif = true;
+                            isElse = false;
+                        }
+                        else
+                        {
+                            isElif = false;
+                        }
+                    }
+                }
+                isEnd = false;
+            }
+        }
+        void ELIF_Body(Statement ELIFB)
+        {
+            var elif_ifst = ELIFB as ELIFStatement;
+            var TF = Run_exp(elif_ifst.SelectBody);
+            if (TF != 0)
+            {
+                isEnd = true;
+                isElse = false;
+                isElif_body = true;
+                for (int i = 0; i < elif_ifst.Body.Length; i++)
+                {
+                    Run(elif_ifst.Body[i]);
+                }
+                isElif_body = false;
+                local_symbol_dict.Clear();
+            }
+            else isElse = true;
+
+            isElif = false;
+        }
+        void ELSE_Body(Statement ELSEB)
+        {
+            var else_ifst = ELSEB as ELSEStatement;
+            for (int i = 0; i < else_ifst.Body.Length; i++)
+            {
+                Run(else_ifst.Body[i]);
+            }
+            local_symbol_dict.Clear();
+        }
+        void IF_Body(Statement IFB)
+        {
+            var if_ifst = IFB as IFStatement;
+            var TF = Run_exp(if_ifst.SelectBody);
+            if (TF != 0)
+            {
+                isIF_body = true;
+                for (int i = 0; i < if_ifst.Body.Length; i++)
+                {
+                    Run(if_ifst.Body[i]);
+                }
+                isIF_body = false;
+                local_symbol_dict.Clear();
+            }
+            else isElse = true;
         }
         void function_statement(Statement[] f_st)
         {
@@ -103,6 +203,8 @@ namespace MyLang
             }
             isFunction = false;
         }
+        #endregion
+        #region Exp
         float Run_exp(Exp exp)
         {
             if (exp is BinOp)//  [ '+' , '-' , '*' , '/' , '=']
@@ -129,16 +231,38 @@ namespace MyLang
                     case BinOpType.Equal:
                         sum = exp_RHS;
                         break;
+                    case BinOpType.Less:
+                        if(exp_LHS < exp_RHS)return 1;
+                        else return 0;
+                    case BinOpType.More:
+                        if (exp_LHS > exp_RHS) return 1;
+                        else return 0;
+                    case BinOpType.LessEqual:
+                        if (exp_LHS <= exp_RHS) return 1;
+                        else return 0;
+                    case BinOpType.MoreEqual:
+                        if (exp_LHS >= exp_RHS) return 1;
+                        else return 0;
+                    case BinOpType.DoubleEqual:
+                        if (exp_LHS == exp_RHS) return 1;
+                        else return 0;
                 }
-                if (isFunction)
+                if (binop)
                 {
-                    local_symbol_dict[local_symbol_str] = sum;
-                    return local_symbol_dict[local_symbol_str];
+                    return sum;
                 }
                 else
                 {
-                    global_symbol_dict[global_symbol_str] = sum;
-                    return global_symbol_dict[global_symbol_str];
+                    if (isFunction || isIF_body || isElif_body || isElse)
+                    {
+                        local_symbol_dict[local_symbol_str] = sum;
+                        return local_symbol_dict[local_symbol_str];
+                    }
+                    else
+                    {
+                        global_symbol_dict[global_symbol_str] = sum;
+                        return global_symbol_dict[global_symbol_str];
+                    }
                 }
             }
             else if(exp is Number)
@@ -150,7 +274,7 @@ namespace MyLang
             {
                 var num = exp as Symbol;
                 float found;
-                if (isFunction)
+                if (isFunction||isIF_body || isElif_body || isElse)
                 {
                     if (local_symbol_dict.TryGetValue(num.Value, out found))
                     {
@@ -185,5 +309,6 @@ namespace MyLang
             }
             return 0;
         }
+        #endregion
     }
 }

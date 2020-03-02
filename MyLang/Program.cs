@@ -8,6 +8,7 @@ using MyLang;
 
 class Program
 {
+    #region GVar
     /// <summary>
     /// コマンド の entry point
     /// </summary>
@@ -17,11 +18,13 @@ class Program
     public static int function_key_number = 0;
     public static List<string> function_rest = new List<string>();
     public static bool chk_is_else_break, chk_is_elif_break;
+    #endregion
     static void Main()
     {
+        //------------------------------------------------------------------------------------------
+        #region LVar
         bool tokenizeOnly = false; // tokenize だけで終わるかどうか
         bool parseOnly = false; // parse だけで終わるかどうか
-
         // 引数をparseする
         var rest = new List<string>();
         int len = 0;
@@ -31,6 +34,9 @@ class Program
         bool own_Semicolon;
         bool chk_if_L, chk_if_R, chk_elif_L, chk_elif_R, chk_else_L, chk_else_R;
         string _input = "";
+        #endregion 
+        //------------------------------------------------------------------------------------------
+        #region Input
         Console.WriteLine("--------------------Input----------------------------------");
         while (true)
         {
@@ -51,18 +57,22 @@ class Program
                 if(_input.Equals("-h;") || _input.Equals("--help;"))
                 {
                     showHelpAndExit();
+                    continue;
                 }
                 else if (_input.Equals("-t;") || _input.Equals("--tokenize;"))
                 {
                     tokenizeOnly = true;
+                    continue;
                 }
                 else if (_input.Equals("-p;") || _input.Equals("--parse;"))
                 {
                     parseOnly = true;
+                    continue;
                 }
                 else if (_input.Equals("-d;") || _input.Equals("--debug;"))
                 {
                     Logger.LogEnabled = true;
+                    continue;
                 }
                 //--------------------------   IF   --------------------------------------------
                 if (chk_if_L)
@@ -198,22 +208,14 @@ class Program
             _input = "";
         }
         Console.WriteLine("------------------------End--------------------------------\n");
-        // 引数がないなら、ヘルプを表示して終わる
-        //if ( rest.Count <= 0)
-        //{
-        //    showHelpAndExit();
-        //}
-        //for(int i = 0; i < function_rest.Count; i++)
-        //{
-        //    Console.WriteLine("------------------------function_rest " + i.ToString() + "--------------------------------");
-        //    Console.WriteLine("function_rest" + i.ToString() + " Val => " + function_rest[i]);
-            
-        //}
+        #endregion        
+        //------------------------------------------------------------------------------------------
+        #region Run
         // 各実行器を用意する
         ITokenizer tokenizer = new SpaceSeparatedTokenizer();
         var parser = new Parser();
         var interpreter = new Interpreter();
-
+        
         for (int i = 0; i< rest.Count; i++)
         {
             Console.WriteLine("------------------------Token" + i.ToString() + "--------------------------------");
@@ -240,14 +242,18 @@ class Program
             // Parse を行う
             Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
             MyLang.Ast.Ast ast;
-            if(tokens[0].Type == TokenType.Function || tokens[0].Type == TokenType.IF)
+            if(tokens[0].Type == TokenType.Function)
             {
                 ast = parser.Function_Parse(tokens);
             }
-            //else if (tokens[0].Type == TokenType.IF)
-            //{
-            //    ast = parser.IF_Parse(tokens);
-            //}
+            else if (tokens[0].Type == TokenType.IF)
+            {
+                ast = parser.IF_Parse(tokens);
+            }
+            else if (tokens[0].Type == TokenType.Number || tokens[0].Type == TokenType.Symbol)
+            {
+                ast = parser.NS_Parse(tokens);
+            }
             else
             {
                 ast = parser.Parse(tokens);
@@ -256,6 +262,7 @@ class Program
 
             if (parseOnly)
             {
+                Console.WriteLine(new MyLang.Ast.AstDisplayer().BuildString(ast, false));
                 if (i < rest.Count)
                 {
                     continue;
@@ -269,7 +276,10 @@ class Program
             
         }
         exit(0);
+        #endregion
     }
+    //------------------------------------------------------------------------------------------
+    #region Utilities
     /// <summary>
     /// ヘルプを表示して終わる
     /// </summary>
@@ -318,6 +328,6 @@ Example:
         waitKey();
         Environment.Exit(resultCode);
     }
-
+    #endregion
 }
 

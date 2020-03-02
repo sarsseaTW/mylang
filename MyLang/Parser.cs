@@ -22,7 +22,12 @@ namespace MyLang
             {TokenType.Let, Ast.BinOpType.Let },  // 'Let'
             {TokenType.Semicolon, Ast.BinOpType.Semicolon },  // ';'
             {TokenType.LBraket, Ast.BinOpType.LBraket },  // '{'
-            {TokenType.RBraket, Ast.BinOpType.RBraket },  // '{'
+            {TokenType.RBraket, Ast.BinOpType.RBraket },  // '}'
+            {TokenType.Less, Ast.BinOpType.Less },  // '<'
+            {TokenType.More, Ast.BinOpType.More },  // '>'
+            {TokenType.LessEqual, Ast.BinOpType.LessEqual },  // '<='
+            {TokenType.MoreEqual, Ast.BinOpType.MoreEqual },  // '>='
+            {TokenType.DoubleEqual, Ast.BinOpType.DoubleEqual },  // '=='
         };
         #endregion
         //------------------------------------------------------------------------------------------
@@ -41,7 +46,15 @@ namespace MyLang
         }
         Token next_currentToken()
         {
-            return tokens_[pos_+1];
+            if(tokens_.Count-1 != pos_)
+            {
+                return tokens_[pos_ + 1];
+            }
+            else
+            {
+                return tokens_[pos_];
+            }
+            
         }
         /// <summary>
         /// 次のトークンに進む
@@ -62,35 +75,69 @@ namespace MyLang
         }
         #endregion
         //------------------------------------------------------------------------------------------
+        #region Number and Symbol Parse
+        public Ast.Ast NS_Parse(IList<Token> tokens) //other
+        {
+            tokens_ = tokens;
+            pos_ = 0;
+            Console.WriteLine("Ast.Ast NS_Parse \n");
+            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+            return exp();
+        }
+        #endregion
+        //------------------------------------------------------------------------------------------
         #region OtherParse
         public Ast.Ast Parse(IList<Token> tokens) //other
         {
             tokens_ = tokens;
             pos_ = 0;
-            Console.WriteLine("Ast.Ast Parse ");
+            Console.WriteLine("Ast.Ast Parse \n");
             Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return statement();
         }
         #endregion
         //------------------------------------------------------------------------------------------
-        #region IF Parse 不確定暫時隱藏
-        //public Ast.Ast IF_Parse(IList<Token> tokens) // IF
-        //{
-        //    tokens_ = tokens;
-        //    pos_ = 0;
-        //    Console.WriteLine("Ast.Ast Parse ");
-        //    Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
-        //    return IF_statement_program();
-        //}
-        //Ast.Program IF_statement_program() //這裡判斷結束條件 if elif else都要考慮
-        //{
-        //    var statement_group = new List<Ast.Statement>();
-        //    while (!currentToken().IsRBraket)
-        //    {
-        //        statement_group.Add(statement());
-        //    }
-        //    return new Ast.Program(statement_group);
-        //}
+        #region IF Parse 
+        public Ast.Ast IF_Parse(IList<Token> tokens) // IF
+        {
+            tokens_ = tokens;
+            pos_ = 0;
+            Console.WriteLine("Ast.Ast IF_Parse \n");
+            Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
+            return IF_statement_program();
+        }
+        Ast.IFProgram IF_statement_program() //這裡判斷結束條件 if elif else都要考慮
+        {
+            var IF_statement_group = new List<Ast.Statement>();
+            var ELSE_statement_group = new List<Ast.Statement>();
+            while (!currentToken().IsRBraket && !currentToken().IsTerminate)
+            {
+                IF_statement_group.Add(statement());
+            }
+            while(next_currentToken().Type == TokenType.ELIF)
+            {
+                if (currentToken().IsRBraket && currentToken().IsTerminate || currentToken().Type == TokenType.ELSE)
+                {
+                    break;
+                }
+                runToken(TokenType.RBraket);
+                while (!currentToken().IsRBraket && !currentToken().IsTerminate)
+                {
+                    IF_statement_group.Add(statement());
+                    //progress();
+                }
+            }
+            if (next_currentToken().Type == TokenType.ELSE)
+            {
+                runToken(TokenType.RBraket);
+                while (!currentToken().IsRBraket && !currentToken().IsTerminate)
+                {
+                    IF_statement_group.Add(statement());
+                    //progress();
+                }
+            }
+            return new Ast.IFProgram(IF_statement_group);
+        }
         #endregion
         //------------------------------------------------------------------------------------------
         #region Function Parse
@@ -98,7 +145,7 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-            Console.WriteLine("Ast.Ast Parse ");
+            Console.WriteLine("Ast.Ast Function_Parse ");
             Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return statement_program();
         }
@@ -153,6 +200,14 @@ namespace MyLang
             {
                 return IFStatement();
             }
+            else if (tokenPos.Type == TokenType.ELIF)
+            {
+                return ELIFStatement();
+            }
+            else if (tokenPos.Type == TokenType.ELSE)
+            {
+                return ELSEStatement();
+            }
             else
             {
                 return null;
@@ -180,17 +235,32 @@ namespace MyLang
             var exp_val = exp();// a
             return new Ast.ReturnStatement(exp_val);
         }
+        Ast.Statement ELIFStatement()// if( a < 1 ){let a = 0;}elif(a > 2){let a = 0;}elif(a <= 999){let a = 0;}elif(a >= 889){let a = 0;}elif(a == 889){let a = 0;}else{let a = 0;}
+        {
+            runToken(TokenType.IF);//return if ,pos++      
+            runToken(TokenType.LParenthesis);//return ( ,pos++  
+            var select = exp(); // return true or false
+            runToken(TokenType.RParenthesis);//return ), pos++   
+            runToken(TokenType.LBraket);//return ), pos++  
+            var block_val = Block();// block
+            return new Ast.ELIFStatement(select, block_val);
+        }
+        Ast.Statement ELSEStatement()
+        {
+            runToken(TokenType.ELSE);
+            runToken(TokenType.LBraket);
+            var block_val = Block();// block
+            return new Ast.ELSEStatement(block_val);
+        }
         Ast.Statement IFStatement()// if( a < 1 ){let a = 0;}elif(a > 2){let a = 0;}elif(a <= 999){let a = 0;}elif(a >= 889){let a = 0;}elif(a == 889){let a = 0;}else{let a = 0;}
         {
             runToken(TokenType.IF);//return if ,pos++      
             runToken(TokenType.LParenthesis);//return ( ,pos++  
             var select = exp(); // return true or false
-            progress();
             runToken(TokenType.RParenthesis);//return ), pos++   
             runToken(TokenType.LBraket);//return ), pos++  
             var block_val = Block();// block
-            runToken(TokenType.RBraket);//return ), pos++  
-            return null;
+            return new Ast.IFStatement(select,block_val);
         }
         Ast.Statement FunctionStatement()// function v{
         {
@@ -222,13 +292,15 @@ namespace MyLang
         Ast.Exp exp1_realArea(Ast.Exp left_hs)
         {
             var tokenPos = currentToken();
-            if (tokenPos.Type == TokenType.Plus || tokenPos.Type == TokenType.Minus)
+            if (tokenPos.Type == TokenType.Less || tokenPos.Type == TokenType.More || 
+                tokenPos.Type == TokenType.LessEqual || tokenPos.Type == TokenType.MoreEqual 
+                || tokenPos.Type == TokenType.DoubleEqual)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
                 Console.WriteLine(now_tokenBioMap.ToString() + "        exp1_realArea ");
                 progress();
                 var right_hs = exp2();
-                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1+4+8-82+5
+                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: a>1
                 return exp1_realArea(exp);
             }
             else
@@ -238,7 +310,7 @@ namespace MyLang
         }
         Ast.Exp exp2()
         {
-            var left_hs = expVal();
+            var left_hs = exp3();
             if (left_hs == null)
             {
                 return null;
@@ -248,14 +320,40 @@ namespace MyLang
         Ast.Exp exp2_realArea(Ast.Exp left_hs)
         {
             var tokenPos = currentToken();
-            if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
+            if (tokenPos.Type == TokenType.Plus || tokenPos.Type == TokenType.Minus)
             {
                 var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
                 Console.WriteLine(now_tokenBioMap.ToString() + "        exp2_realArea ");
                 progress();
+                var right_hs = exp3();
+                var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1+4+8-82+5
+                return exp2_realArea(exp);
+            }
+            else
+            {
+                return left_hs;
+            }
+        }
+        Ast.Exp exp3()
+        {
+            var left_hs = expVal();
+            if (left_hs == null)
+            {
+                return null;
+            }
+            return exp3_realArea(left_hs);
+        }
+        Ast.Exp exp3_realArea(Ast.Exp left_hs)
+        {
+            var tokenPos = currentToken();
+            if (tokenPos.Type == TokenType.Star || tokenPos.Type == TokenType.Slash)
+            {
+                var now_tokenBioMap = BinOpMap[tokenPos.Type]; //儲存算術邏輯
+                Console.WriteLine(now_tokenBioMap.ToString() + "        exp3_realArea ");
+                progress();
                 var right_hs = expVal();
                 var exp = new Ast.BinOp(now_tokenBioMap, left_hs, right_hs);// 儲存式子 ex: 1*4 *5/d
-                return exp2_realArea(exp);
+                return exp3_realArea(exp);
             }
             else
             {
