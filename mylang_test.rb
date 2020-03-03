@@ -108,7 +108,7 @@ def test_IF
 end
 def test_Function
   testcases = [
-    ["let a = 21 * 2 * 3; print a;", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"]
+    ["function ccc{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(R.Exp) => 0\nRun_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(R.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(R.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(R.Exp) => 0"]
   ]
   puts "** Testing Function ..."
   run_test(testcases, [MY_LANG_EXE])
@@ -125,4 +125,6 @@ puts "\n"
 test_Print
 puts "\n"
 test_IF
+puts "\n"
+test_Function
 puts "\n"

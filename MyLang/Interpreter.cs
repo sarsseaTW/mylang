@@ -116,6 +116,18 @@ namespace MyLang
                     global_symbol_str = "";
                 }
             }
+            if(ast is FunctionStatement afs)
+            {
+                //Console.WriteLine(afs);
+                isFunction = true;
+                function_symbol_str = afs.Name.Value;
+                function_body_dict[afs.Name.Value] = afs;
+                for (int i = 0; i < afs.Body.Length; i++)
+                {
+                    Run(afs.Body[i]);
+                }
+                isFunction = false;
+            }
             if(ast is Ast.Program pg)
             {
                 isFunction = true;
@@ -326,8 +338,6 @@ namespace MyLang
                         else
                         {
                             local_symbol_dict[local_symbol_str] = 0;
-                            global_symbol_str = num.Value;
-                            global_symbol_dict[global_symbol_str] = 0;
                             return local_symbol_dict[local_symbol_str];
                         }
                     }

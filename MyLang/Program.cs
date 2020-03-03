@@ -65,7 +65,7 @@ class Program
             // _input = Console.ReadLine();
             chk_if_L = Regex.IsMatch(_input, @"^(if)(\()[^A-Za-z0-9]*[A-Za-z0-9]+[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*(\))({)$");
             chk_LBraket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*({)[^A-Za-z0-9]*");
-            chk_one_Braket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*[{][^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[}]$");
+            chk_one_Braket = Regex.IsMatch(_input, "^(function)[^A-Za-z0-9]+[A-Za-z0-9]+[^A-Za-z0-9]*[{][^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[}]");
             own_Semicolon = Regex.IsMatch(_input, "[^A-Za-z0-9]*([A-Za-z0-9]*|[^A-Za-z0-9]*)*[^A-Za-z0-9]*[;][^A-Za-z0-9]*");
             end = Regex.IsMatch(_input, @"(end)[^A-Za-z0-9]*");
             bool test = Regex.IsMatch(_input, @"(end)[^A-Za-z0-9]*");
@@ -266,7 +266,7 @@ class Program
             // Parse を行う
             //Console.WriteLine("--------------Parser" + i.ToString() + "------------- ");
             MyLang.Ast.Ast ast;
-            //if(tokens[0].Type == TokenType.Function)
+            //if (tokens[0].Type == TokenType.Function)
             //{
             //    ast = parser.Function_Parse(tokens);
             //}
