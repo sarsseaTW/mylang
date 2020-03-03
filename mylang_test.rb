@@ -142,9 +142,8 @@ def test_Mix
   testcases = [
     ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(10,5) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 10\nRun_exp(P.Exp) => 10\nRun_exp(L.Exp) => 5\nRun_exp(P.Exp) => 5\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 555\nRun_exp(R.Exp) => 15"],
     ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(5,100) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 999\nRun_exp(R.Exp) => 105"]
-
   ]
-  puts "** Testing For"
+  puts "** Testing Mix"
   run_test(testcases, [MY_LANG_EXE])
 end
 test_tokenizer
@@ -164,4 +163,6 @@ puts "\n"
 test_While
 puts "\n"
 test_For
+puts "\n"
+test_Mix
 puts "\n"
