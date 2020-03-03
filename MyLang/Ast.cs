@@ -119,20 +119,6 @@ namespace MyLang
                 return Tuple.Create("Program", Statements.Select(s => (Ast)s).ToArray());
             }
         }
-        public class IFProgram : Ast
-        {
-            public readonly Statement[] Statements;
-
-            public IFProgram(IList<Statement> statements)
-            {
-                Statements = statements.ToArray();
-            }
-
-            public override Tuple<string, Ast[]> GetDisplayInfo()
-            {
-                return Tuple.Create("IFProgram", Statements.Select(s => (Ast)s).ToArray());
-            }
-        }
         public abstract class Statement : Ast
         {
             
@@ -212,17 +198,46 @@ namespace MyLang
                 return Tuple.Create("function", new Ast[] { Name, new AstList(Body) });
             }
         }
+        public class WhileStatement : Statement
+        {
+            public readonly Statement[] Body;
+            public readonly Exp SelectBody;
+            public WhileStatement(Exp selectBody, IList<Statement> body)
+            {
+                SelectBody = selectBody;
+                Body = body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("IF", new Ast[] { SelectBody, new AstList(Body) });
+            }
+        }
+        public class ForStatement : Statement
+        {
+            public readonly Statement let_val;
+            public readonly Statement let_val_op;
+            public readonly Exp select;
+            public readonly Statement[] Body;
+            public ForStatement(Statement _let_val, Exp _select, Statement _let_val_op, IList<Statement> _Body)
+            {
+                let_val = _let_val;
+                select = _select;
+                let_val_op = _let_val_op;
+                Body = _Body.ToArray();
+            }
+            public override Tuple<string, Ast[]> GetDisplayInfo()
+            {
+                return Tuple.Create("ForStatement", new Ast[] { let_val , select, let_val_op , new AstList(Body) });
+            }
+        }
         public class IFStatement : Statement
         {
             public readonly Statement[] Body;
             public readonly Exp SelectBody;
-            public readonly Dictionary<Exp, Statement[]> Var = new Dictionary<Exp, Statement[]>();
             public IFStatement(Exp selectBody, IList<Statement> body)
             {
                 SelectBody = selectBody;
                 Body = body.ToArray();
-                Var[SelectBody] = Body;
-                //Console.WriteLine("body.Count()=>" + body.Count().ToString()); 
             }
             public override Tuple<string, Ast[]> GetDisplayInfo()
             {

@@ -43,6 +43,8 @@ namespace MyLang
         MoreEqual, // ">="
         DoubleEqual, // "=="
 
+        WHILE, // "while"
+        FOR, // "for"
     }
     
     /// <summary>

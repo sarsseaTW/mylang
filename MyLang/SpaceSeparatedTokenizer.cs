@@ -112,6 +112,12 @@ namespace MyLang
                     {
                         switch (sum_eng.ToString())
                         {
+                            case "for":
+                                dummy.Add(new Token(TokenType.FOR, "for"));
+                                break;
+                            case "while":
+                                dummy.Add(new Token(TokenType.WHILE,"while"));
+                                break;
                             case "if":
                                 dummy.Add(new Token(TokenType.IF, "if"));
                                 break;
@@ -151,8 +157,6 @@ namespace MyLang
                 {
                     if (int_isStr)
                     {
-                        //Console.WriteLine("sum_int");
-                        //Console.WriteLine(sum_int + " \n");
                         dummy.Add(new Token(TokenType.Number, sum_int.ToString()));
                         sum_int = "";
                     }

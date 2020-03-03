@@ -11,7 +11,6 @@ namespace MyLang
         #region Var
         IList<Token> tokens_;
         public static int pos_ = 0;
-        bool is_function = false;
         static Dictionary<TokenType, Ast.BinOpType> BinOpMap = new Dictionary<TokenType, Ast.BinOpType>
         {
             {TokenType.Plus, Ast.BinOpType.Add }, // '+'
@@ -29,7 +28,6 @@ namespace MyLang
             {TokenType.MoreEqual, Ast.BinOpType.MoreEqual },  // '>='
             {TokenType.DoubleEqual, Ast.BinOpType.DoubleEqual },  // '=='
         };
-        private int _pos;
         public Ast.Statement stat;
         #endregion
         //------------------------------------------------------------------------------------------
@@ -82,8 +80,6 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-           // Console.WriteLine("Ast.Ast NS_Parse \n");
-            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
             return exp();
         }
         #endregion
@@ -93,21 +89,9 @@ namespace MyLang
         {
             tokens_ = tokens;
             pos_ = 0;
-            //Console.WriteLine("Ast.Ast Parse \n");
-            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
-            return aa();
+            return Other_Progeam();
         }
-        //Ast.Program Other_program()
-        //{
-        //    var statement_group = new List<Ast.Statement>();
-        //    while (!currentToken().IsSemicolon)
-        //    {
-        //        if(currentToken().Type == TokenType.IF) { /*return IF_statement_program();*/ }
-        //        statement_group.Add(aa());
-        //    }
-        //    return new Ast.Program(statement_group);
-        //}
-        Ast.Statement aa()
+        Ast.Statement Other_Progeam()
         {
             var block_val = Other_Block();// block
             return new Ast.OtherStatement(block_val);
@@ -133,87 +117,6 @@ namespace MyLang
         }
         #endregion
         //------------------------------------------------------------------------------------------
-        #region IF Parse 
-        public Ast.Ast IF_Parse(IList<Token> tokens) // IF
-        {
-            tokens_ = tokens;
-            pos_ = 0;
-            //Console.WriteLine("Ast.Ast IF_Parse \n");
-            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
-            return IF_statement_program();
-        }
-        Ast.IFProgram IF_statement_program() //這裡判斷結束條件 if elif else都要考慮
-        {
-            var IF_statement_group = new List<Ast.Statement>();
-            var ELSE_statement_group = new List<Ast.Statement>();
-            var tok = currentToken();
-            while (!tok.IsRBraket)
-            {
-                IF_statement_group.Add(statement());
-                tok = currentToken();
-            }
-            while(next_currentToken().Type == TokenType.ELIF)
-            {
-                if (currentToken().IsRBraket && currentToken().IsTerminate || currentToken().Type == TokenType.ELSE)
-                {
-                    break;
-                }
-                runToken(TokenType.RBraket);
-                while (!currentToken().IsRBraket && !currentToken().IsTerminate)
-                {
-                    IF_statement_group.Add(statement());
-                    //progress();
-                }
-            }
-            if (next_currentToken().Type == TokenType.ELSE)
-            {
-                runToken(TokenType.RBraket);
-                while (!currentToken().IsRBraket && !currentToken().IsTerminate)
-                {
-                    IF_statement_group.Add(statement());
-                    //progress();
-                }
-            }
-            return new Ast.IFProgram(IF_statement_group);
-        }
-        #endregion
-        //------------------------------------------------------------------------------------------
-        #region Function Parse
-        public Ast.Ast Function_Parse(IList<Token> tokens) // function
-        {
-            tokens_ = tokens;
-            pos_ = 0;
-            //Console.WriteLine("Ast.Ast Function_Parse ");
-            //Console.WriteLine(string.Join(" ", tokens_.Select(t => t.Text).ToArray()) + "\n");
-            return statement_program();
-        }
-        Ast.Program statement_program()
-        {
-            var statement_group = new List<Ast.Statement>();
-            while (!currentToken().IsRBraket)
-            {
-                statement_group.Add(statement());
-            }
-            return new Ast.Program(statement_group);
-        }
-        Ast.Statement[] Block()
-        {
-            var statement_group = new List<Ast.Statement>();
-            while (true)
-            {
-                var stat = statement();
-                if (stat == null)
-                {
-                    break;
-                }
-                statement_group.Add(stat);
-                progress();
-            }
-
-            return statement_group.ToArray();
-        }
-        #endregion
-        //------------------------------------------------------------------------------------------
         #region statement
         Ast.Statement statement()
         {
@@ -221,6 +124,10 @@ namespace MyLang
             if (tokenPos.IsLet)
             {
                 return LetStatement();
+            }
+            else if(tokenPos.Type == TokenType.WHILE)
+            {
+                return WhileStatement();
             }
             else if (tokenPos.IsPrint)
             {
@@ -233,6 +140,10 @@ namespace MyLang
             else if (tokenPos.IsReturn)
             {
                 return ReturnStatement();
+            }
+            else if (tokenPos.Type == TokenType.FOR)
+            {
+                return ForStatement();
             }
             else if (tokenPos.Type == TokenType.IF)
             {
@@ -280,14 +191,14 @@ namespace MyLang
             var select = exp(); // return true or false
             runToken(TokenType.RParenthesis);//return ), pos++   
             runToken(TokenType.LBraket);//return ), pos++  
-            var block_val = Block();// block
+            var block_val = Other_Block();// block
             return new Ast.ELIFStatement(select, block_val);
         }
         Ast.Statement ELSEStatement()
         {
             runToken(TokenType.ELSE);
             runToken(TokenType.LBraket);
-            var block_val = Block();// block
+            var block_val = Other_Block();// block
             return new Ast.ELSEStatement(block_val);
         }
         Ast.Statement IFStatement()// if( a < 1 ){let a = 0;}elif(a > 2){let a = 0;}elif(a <= 999){let a = 0;}elif(a >= 889){let a = 0;}elif(a == 889){let a = 0;}else{let a = 0;}
@@ -297,8 +208,33 @@ namespace MyLang
             var select = exp(); // return true or false
             runToken(TokenType.RParenthesis);//return ), pos++   
             runToken(TokenType.LBraket);//return ), pos++  
-            var block_val = Block();// block
+            var block_val = Other_Block();// block
             return new Ast.IFStatement(select,block_val);
+        }
+        Ast.Statement ForStatement()
+        {
+            runToken(TokenType.FOR);
+            runToken(TokenType.LParenthesis);
+            var let_val = LetStatement();
+            runToken(TokenType.Semicolon);
+            var select = exp();
+            runToken(TokenType.Semicolon);
+            var let_val_op = LetStatement();
+            runToken(TokenType.Semicolon);
+            runToken(TokenType.RParenthesis);
+            runToken(TokenType.LBraket);
+            var block_val = Other_Block();
+            return new Ast.ForStatement(let_val,select,let_val_op,block_val);
+        }
+        Ast.Statement WhileStatement()
+        {
+            runToken(TokenType.WHILE);
+            runToken(TokenType.LParenthesis);
+            var exp_val = exp();
+            runToken(TokenType.RParenthesis);
+            runToken(TokenType.LBraket);
+            var block = Other_Block();
+            return new Ast.WhileStatement(exp_val, block);
         }
         Ast.Statement FunctionStatement()// function v{
         {
@@ -307,7 +243,7 @@ namespace MyLang
             var symbol = new Ast.Symbol(tokenPos.Text);//symbol = v
             progress();
             runToken(TokenType.LBraket);//return {, pos++   
-            var block_val = Block();// block
+            var block_val = Other_Block();// block
             return new Ast.FunctionStatement(symbol,block_val);
         }
         #endregion
