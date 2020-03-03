@@ -100,7 +100,8 @@ def test_IF
     ["let a = 21 * 2 * 3; if(a>0){print a;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 126"],#if
 	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a > 0){ print a + 2 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 128"],#elif
 	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a < 0){ print a + 2 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 127"],#else
-	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a < 0){ print a + 2 ;}elif( a > 0){ print a + 100 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 226"]
+	["let a = 21 * 2 * 3; if( a == 0 ){ print a ;}elif( a < 0){ print a + 2 ;}elif( a > 0){ print a + 100 ;}else{ print a + 1 ;}", "Run_exp(L.Exp) => 126\nRun_exp(P.Exp) => 226"],
+	["if( a > 999 ){ let v = 445 ; let s = 990 ; print v ;}elif( a == 999){ let x = 999 ; print xd ;}else{ let a = 5 ; print 998 ;}","Run_exp(L.Exp) => 5\nRun_exp(P.Exp) => 998"]
   ]
   puts "** Testing IF ..."
   run_test(testcases, [MY_LANG_EXE])

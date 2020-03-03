@@ -96,7 +96,7 @@ namespace MyLang
                 if (isFunction)
                 {
                     function_symbol_dict[function_symbol_str] = Run_exp(R.Exp);
-                    //Console.WriteLine("Run_exp(R.Exp) => " + Run_exp(R.Exp));
+                    Console.WriteLine("Run_exp(R.Exp) => " + Run_exp(R.Exp));
                 }
             }
             if (ast is LetStatement L)
@@ -104,7 +104,7 @@ namespace MyLang
                 if (isFunction || isIF_body || isElse || isElif_body)
                 {
                     local_symbol_str = L.Variable.Value;
-                    //Console.WriteLine("Run_exp(L.Exp) => " + Run_exp(L.Exp));
+                    Console.WriteLine("Run_exp(L.Exp) => " + Run_exp(L.Exp));
                     local_symbol_dict[local_symbol_str] = Run_exp(L.Exp);
                     local_symbol_str = "";
                 }
