@@ -141,20 +141,24 @@ namespace MyLang
                         Run(W.Body[i]);
                     }
                     isWhile = false;
-                    local_symbol_dict.Clear();
+                    if(!isFunction)local_symbol_dict.Clear();
                     TF = Run_exp(W.SelectBody);
                 }
             }
             if(ast is FunctionStatement afs)
             {
-                isFunction = true;
+               // isFunction = true;
                 function_symbol_str = afs.Name.Value;
                 function_body_dict[afs.Name.Value] = afs;
-                for (int i = 0; i < afs.Body.Length; i++)
+                function_symbol_dict[function_symbol_str] = 0;
+                if (isFunction)
                 {
-                    Run(afs.Body[i]);
+                    for (int i = 0; i < afs.Body.Length; i++)
+                    {
+                        Run(afs.Body[i]);
+                    }
                 }
-                isFunction = false;
+                //isFunction = false;
             }
             if(ast is IFStatement ifs)
             {
@@ -182,7 +186,7 @@ namespace MyLang
                     Run(elif_ifst.Body[i]);
                 }
                 isElif_body = false;
-                local_symbol_dict.Clear();
+                if (!isFunction) local_symbol_dict.Clear();
             }
             else isElse = true;
 
@@ -195,7 +199,7 @@ namespace MyLang
             {
                 Run(else_ifst.Body[i]);
             }
-            local_symbol_dict.Clear();
+            if (!isFunction) local_symbol_dict.Clear();
             isElse = false;
         }
         void IF_Body(Statement IFB)
@@ -210,7 +214,7 @@ namespace MyLang
                     Run(if_ifst.Body[i]);
                 }
                 isIF_body = false;
-                local_symbol_dict.Clear();
+                if(!isFunction)local_symbol_dict.Clear();
             }
             else
             {
