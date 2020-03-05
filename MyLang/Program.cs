@@ -99,7 +99,7 @@ class Program
                 Console.Clear();
                 goto reIn;
             }
-            if (!endIsSem) _input += _input;
+            if (!endIsSem) _input += ";" ;
             if(_input == "mylang if.txt") _input = IF_file.ReadToEnd();
             rest.Insert(len, _input);
         }
