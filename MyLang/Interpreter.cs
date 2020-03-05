@@ -32,11 +32,7 @@ namespace MyLang
         bool isWhile = false;
         bool isFor = false;
         bool isReFunction = false;
-        bool FirstReRun = false;
-        bool isReNumOne = false;
-        bool isReEnd = false;
         float index = 0;
-        float Re_sum = 0;
 
         Stack<float> stack_ReFunction = new Stack<float>();
 
@@ -44,15 +40,6 @@ namespace MyLang
         #region Run
         public void Run(Ast.Ast ast)
         {
-            if(ast.GetType().ToString() == "MyLang.Ast.BinOp" || ast.GetType().ToString() == "MyLang.Ast.Number" 
-                || ast.GetType().ToString() == "MyLang.Ast.Symbol")
-            {
-                binop = true;
-                Console.WriteLine("Ans => " + Run_exp(ast as Exp).ToString()); 
-                binop = false;
-            }
-            //--------------------------------------------------------------------------------------------------------------
-            //--------------------------------------------------------------------------------------------------------------
             if (ast is Ast.OtherStatement other)
             {
                 for (int i = 0; i < other.Body.Length; i++)
@@ -63,7 +50,6 @@ namespace MyLang
                         if (other.Body[i + 1].GetType().ToString() == "MyLang.Ast.ELIFStatement")
                         {
                             isElif = true;
-                            isElse = false;
                         }
                         else
                         {
@@ -74,7 +60,24 @@ namespace MyLang
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
-            if (ast is PrintStatement P)
+            else if (ast is FunctionStatement afs)
+            {
+                // isFunction = true;
+                function_symbol_str = afs.Name.Value;
+                function_body_dict[afs.Name.Value] = afs;
+                function_symbol_dict[function_symbol_str] = 0;
+                if (isFunction)
+                {
+                    for (int i = 0; i < afs.Body.Length; i++)
+                    {
+                        Run(afs.Body[i]);
+                    }
+                }
+                //isFunction = false;
+            }
+            //--------------------------------------------------------------------------------------------------------------
+            //--------------------------------------------------------------------------------------------------------------
+            else if (ast is PrintStatement P)
             {
                 if(P.Exp is VarFunctionStatement VF)
                 {
@@ -84,7 +87,6 @@ namespace MyLang
                     {
                         //function_symbol_str = var_function_symbol_str;
                         function_symbol_str = VF.Name.Value;
-                        local_symbol_str = "index";
                         isFunction = true;
                         //var_function_symbol_dict[var_function_symbol_str] = VF.Args;
                         for (int i = 0; i < VF.Args.Length; i++)
@@ -109,7 +111,7 @@ namespace MyLang
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
-            if (ast is ReturnStatement R)
+            else if (ast is ReturnStatement R)
             {
                 if (isFunction)
                 {
@@ -122,7 +124,7 @@ namespace MyLang
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
-            if (ast is LetStatement L)
+            else if (ast is LetStatement L)
             {
                 if (isFunction || isIF_body || isElse || isElif_body ||isWhile || isFor)
                 {
@@ -141,7 +143,7 @@ namespace MyLang
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
-            if (ast is ForStatement Fora)
+            else if (ast is ForStatement Fora)
             {
                 isFor = true;
                 Run(Fora.let_val);
@@ -157,7 +159,7 @@ namespace MyLang
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
-            if (ast is WhileStatement W)
+            else if (ast is WhileStatement W)
             {
                 var TF = Run_exp(W.SelectBody);
                 while(TF != 0)
@@ -174,24 +176,7 @@ namespace MyLang
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
-            if (ast is FunctionStatement afs)
-            {
-               // isFunction = true;
-                function_symbol_str = afs.Name.Value;
-                function_body_dict[afs.Name.Value] = afs;
-                function_symbol_dict[function_symbol_str] = 0;
-                if (isFunction)
-                {
-                    for (int i = 0; i < afs.Body.Length; i++)
-                    {
-                        Run(afs.Body[i]);
-                    }
-                }
-                //isFunction = false;
-            }
-            //--------------------------------------------------------------------------------------------------------------
-            //--------------------------------------------------------------------------------------------------------------
-            if (ast is IFStatement ifs)
+            else if (ast is IFStatement ifs)
             {
                 IF_Body(ifs);
             }
@@ -203,6 +188,16 @@ namespace MyLang
             {
                 if(isElse) ELSE_Body(elses);
             }
+            //--------------------------------------------------------------------------------------------------------------
+            //--------------------------------------------------------------------------------------------------------------
+            else if (ast.GetType().ToString() == "MyLang.Ast.BinOp" || ast.GetType().ToString() == "MyLang.Ast.Number"
+                || ast.GetType().ToString() == "MyLang.Ast.Symbol")
+            {
+                binop = true;
+                Console.WriteLine("Ans => " + Run_exp(ast as Exp).ToString());
+                binop = false;
+            }
+
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
         }
@@ -223,7 +218,6 @@ namespace MyLang
                 isElif_body = false;
                 if (!isFunction) local_symbol_dict.Clear();
             }
-            else isElse = true;
 
             isElif = false;
         }
@@ -247,7 +241,6 @@ namespace MyLang
             var TF = Run_exp(if_ifst.SelectBody);
             if (TF != 0)
             {
-                if (isReFunction) FirstReRun = false;
                 isElse = false;
                 isElif = false;
                 isIF_body = true;

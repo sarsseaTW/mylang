@@ -1,0 +1,12 @@
+"let a = 1000 ; 
+if( a > 999 ){ 
+    let v = 445 ;
+    let s = 990 ; 
+    print v ;
+    }elif( a == 999){
+         let x = 999 ; 
+         print xd ;
+         }else{ 
+             let a = 5 ; 
+             print 998 ;
+             }"
