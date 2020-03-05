@@ -119,7 +119,8 @@ def test_IF
 end
 def test_Function
   testcases = [
-    ["function ccc{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(R.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(R.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(R.Exp) => 0"]
+    ["function ccc{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(P.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(P.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0"],
+	["function a{ let b = 3 ; let c = b * 10 ; print b + c ;} function bb{ function a{ return @0 * 10 ;} return a(@0 + 10);} print bb(10) ;","Run_exp(P.Exp) => 200"]
   ]
   puts "** Testing Function"
   run_test(testcases, [MY_LANG_EXE])
@@ -140,15 +141,15 @@ def test_For
 end
 def test_Mix
   testcases = [
-    ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(10,5) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 10\nRun_exp(P.Exp) => 10\nRun_exp(L.Exp) => 5\nRun_exp(P.Exp) => 5\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 555\nRun_exp(R.Exp) => 15"],
-    ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(5,100) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 999\nRun_exp(R.Exp) => 105"]
+    ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(10,5) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 10\nRun_exp(P.Exp) => 10\nRun_exp(L.Exp) => 5\nRun_exp(P.Exp) => 5\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 555\nRun_exp(P.Exp) => 15"],
+    ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(5,100) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 999\nRun_exp(P.Exp) => 105"]
   ]
   puts "** Testing Mix"
   run_test(testcases, [MY_LANG_EXE])
 end
 def test_FunctionToFunction
   testcases = [
-    ["function fib{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(R.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(R.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(R.Exp) => 0"]
+    ["function fib{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(P.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(P.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0"]
   ]
   puts "** Testing FunctionToFunction"
   run_test(testcases, [MY_LANG_EXE])

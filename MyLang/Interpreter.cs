@@ -94,8 +94,9 @@ namespace MyLang
                             local_symbol_dict["@" + i.ToString()] = Run_exp(VF.Args[i]);
                             //Console.WriteLine("@"+i.ToString()+"----->" + local_symbol_dict["@" + i.ToString()]);
                         }
-                        stack_ReFunction.Push(local_symbol_dict["@0"]);
+                        stack_ReFunction.Push(local_symbol_dict["@0"]);//開作弊模式不用減一，不開要減一
                         Run(function_body_dict[function_symbol_str]);
+                        Console.WriteLine("Run_exp(P.Exp) => " + function_symbol_dict[function_symbol_str]);
                         local_symbol_dict.Clear();
                     }
                     else
@@ -119,7 +120,7 @@ namespace MyLang
                     function_symbol_dict[function_symbol_str] = Ans;
                     Re_Funtion_Number[index] = Ans;
 
-                    Console.WriteLine("Run_exp(R.Exp) => " + function_symbol_dict[function_symbol_str]);
+                    //Logger.Trace("Run_exp(R.Exp) => " + function_symbol_dict[function_symbol_str]);
                 }
             }
             //--------------------------------------------------------------------------------------------------------------
@@ -263,7 +264,7 @@ namespace MyLang
                 index = Run_exp(VA.Args[0]);
                 if (Re_Funtion_index.TryGetValue(index, out var found))
                 {
-                    return found;
+                    return found;//作弊模式
                 }
                 stack_ReFunction.Push(index);
                 Run(function_body_dict[function_symbol_str]);
