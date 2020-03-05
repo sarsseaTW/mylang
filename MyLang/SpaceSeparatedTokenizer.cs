@@ -209,18 +209,18 @@ namespace MyLang
                         dummy.Add(new Token(TokenType.LBraket, "{"));
                         break;
                     case "}":
-                        if (any_3 != ';' && any_3 != '{')
-                        {
-                            dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
-                        }
+                        //if (any_3 != ';' && any_3 != '{')
+                        //{
+                        //    dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
+                        //}
                         dummy.Add(new Token(TokenType.RBraket, "}"));
                         break;
                 }
             }
-            if (!sem_tf)
-            {
-                dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
-            }
+            //if (!sem_tf)
+            //{
+            //    dummy.Add(new Token(TokenType.Terminate, "{EOF}"));
+            //}
             #endregion 
             //Console.WriteLine("Token");
             //Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");

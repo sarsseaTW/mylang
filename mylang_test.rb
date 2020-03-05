@@ -146,6 +146,13 @@ def test_Mix
   puts "** Testing Mix"
   run_test(testcases, [MY_LANG_EXE])
 end
+def test_FunctionToFunction
+  testcases = [
+    ["function fib{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(R.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(R.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(R.Exp) => 0"]
+  ]
+  puts "** Testing FunctionToFunction"
+  run_test(testcases, [MY_LANG_EXE])
+end
 test_tokenizer
 puts "\n"
 test_parser
