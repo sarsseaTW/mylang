@@ -19,7 +19,7 @@ namespace MyLang
         public string function_symbol_str = "";
         public Dictionary<string, Ast.Ast> function_body_dict = new Dictionary<string, Ast.Ast>();
         public string function_body_str = "";
-        public Dictionary<int, float> Re_Funtion_index = new Dictionary<int, float>();
+        public Dictionary<float, float> Re_Funtion_index = new Dictionary<float, float>();
         public Dictionary<float, float> Re_Funtion_Number = new Dictionary<float, float>();
         public string index_str;
 
@@ -33,7 +33,7 @@ namespace MyLang
         bool isFor = false;
         bool isReFunction = false;
         float index = 0;
-
+        float peekVal = 0;
         Stack<float> stack_ReFunction = new Stack<float>();
 
         #endregion
@@ -94,7 +94,7 @@ namespace MyLang
                             local_symbol_dict["@" + i.ToString()] = Run_exp(VF.Args[i]);
                             //Console.WriteLine("@"+i.ToString()+"----->" + local_symbol_dict["@" + i.ToString()]);
                         }
-                        stack_ReFunction.Push(local_symbol_dict["@0"]-1);
+                        stack_ReFunction.Push(local_symbol_dict["@0"]);
                         Run(function_body_dict[function_symbol_str]);
                         local_symbol_dict.Clear();
                     }
@@ -117,8 +117,8 @@ namespace MyLang
                 {
                     var Ans = Run_exp(R.Exp);
                     function_symbol_dict[function_symbol_str] = Ans;
-
                     Re_Funtion_Number[index] = Ans;
+
                     Console.WriteLine("Run_exp(R.Exp) => " + function_symbol_dict[function_symbol_str]);
                 }
             }
@@ -197,9 +197,6 @@ namespace MyLang
                 Console.WriteLine("Ans => " + Run_exp(ast as Exp).ToString());
                 binop = false;
             }
-
-            //--------------------------------------------------------------------------------------------------------------
-            //--------------------------------------------------------------------------------------------------------------
         }
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -264,9 +261,14 @@ namespace MyLang
             if(ast is VarFunctionStatement VA)
             {
                 index = Run_exp(VA.Args[0]);
+                if (Re_Funtion_index.TryGetValue(index, out var found))
+                {
+                    return found;
+                }
                 stack_ReFunction.Push(index);
                 Run(function_body_dict[function_symbol_str]);
                 stack_ReFunction.Pop();
+                peekVal = stack_ReFunction.Peek();
                 return Re_Funtion_Number[index];
             }
             else
@@ -290,6 +292,7 @@ namespace MyLang
                 {
                     case BinOpType.Add:
                         sum = exp_LHS + exp_RHS;
+                        Re_Funtion_index[peekVal] = sum;
                         break;
                     case BinOpType.Sub:
                         sum = exp_LHS - exp_RHS;
@@ -368,6 +371,7 @@ namespace MyLang
                         {
                             if (isReFunction)
                             {
+                                Re_Funtion_index[peekVal] = 0 ;
                                 return stack_ReFunction.Peek();
                             }
                             else return found;// @0

@@ -100,7 +100,7 @@ class Program
                 goto reIn;
             }
             if (!endIsSem) _input += ";" ;
-            if(_input == "mylang if.txt") _input = IF_file.ReadToEnd();
+            if(_input == "mylang if.txt;") _input = IF_file.ReadToEnd();
             rest.Insert(len, _input);
         }
         for (int i = 0; i< rest.Count; i++)
