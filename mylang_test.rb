@@ -142,16 +142,27 @@ end
 def test_Mix
   testcases = [
     ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(10,5) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 10\nRun_exp(P.Exp) => 10\nRun_exp(L.Exp) => 5\nRun_exp(P.Exp) => 5\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 555\nRun_exp(P.Exp) => 15"],
-    ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(5,100) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 999\nRun_exp(P.Exp) => 105"]
+    ["let a = 10 ; function aa{ if(@0 > @1){ for( let b = 10 ; b >= 5 ; let b = b - 5 ;){ print b ;} print 555 ;}else{ let s = 2 ; while( s >= 1 ){ print s ; let s = s - 1 ;} print 999 ;} return @0 + @1 ;} print aa(5,100) ;","Run_exp(L.Exp) => 10\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 999\nRun_exp(P.Exp) => 105"],
+	["let num = 100 ; let time = 10 ; function add{ return @0 + @1 ;} while( time > 0 ){ for( let i = 0 ; i < time ; let i = i + 1 ;){ if( i == 2 ){ print time + i ; if( time <= 5 ){ let num = num - 10 ;} }else{ print time - i ; } print i ;} let time = time - 5 ; print add(time ,num);} print time ; print num ;",
+	"Run_exp(L.Exp) => 100\nRun_exp(L.Exp) => 10\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 10\nRun_exp(P.Exp) => 0\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 9\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 12\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 3\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => 3\nRun_exp(L.Exp) => 4\nRun_exp(P.Exp) => 6\nRun_exp(P.Exp) => 4\nRun_exp(L.Exp) => 5\nRun_exp(P.Exp) => 5\nRun_exp(P.Exp) => 5\nRun_exp(L.Exp) => 6\nRun_exp(P.Exp) => 4\nRun_exp(P.Exp) => 6\nRun_exp(L.Exp) => 7\nRun_exp(P.Exp) => 3\nRun_exp(P.Exp) => 7\nRun_exp(L.Exp) => 8\nRun_exp(P.Exp) => 2\nRun_exp(P.Exp) => 8\nRun_exp(L.Exp) => 9\nRun_exp(P.Exp) => 1\nRun_exp(P.Exp) => 9\nRun_exp(L.Exp) => 10\nRun_exp(L.Exp) => 5\nRun_exp(P.Exp) => 105\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 5\nRun_exp(P.Exp) => 0\nRun_exp(L.Exp) => 1\nRun_exp(P.Exp) => 4\nRun_exp(P.Exp) => 1\nRun_exp(L.Exp) => 2\nRun_exp(P.Exp) => 7\nRun_exp(L.Exp) => 90\nRun_exp(P.Exp) => 2\nRun_exp(L.Exp) => 3\nRun_exp(P.Exp) => 2\nRun_exp(P.Exp) => 3\nRun_exp(L.Exp) => 4\nRun_exp(P.Exp) => 1\nRun_exp(P.Exp) => 4\nRun_exp(L.Exp) => 5\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 90\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 90"]
   ]
   puts "** Testing Mix"
   run_test(testcases, [MY_LANG_EXE])
 end
 def test_FunctionToFunction
   testcases = [
-    ["function fib{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(P.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(P.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0"]
+    ["function ccc{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;",
+	"Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(P.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(P.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0"]
   ]
   puts "** Testing FunctionToFunction"
+  run_test(testcases, [MY_LANG_EXE])
+end
+def test_RE_Fnc
+  testcases = [
+    ["function Sum{ if( @0 < 2 ){ return 1 ;}else{ return @0 + Sum( @0 - 1 );}} print Sum(10) ;","Run_exp(P.Exp) => 55"],
+	["function fib{ if( @0 <= 1 ){ return 1 ;}else{ return fib( @0 - 1 ) + fib( @0 - 2 ) ;}} print fib(10) ;","Run_exp(P.Exp) => 55"]
+  ]
+  puts "** Testing RE_Fnc"
   run_test(testcases, [MY_LANG_EXE])
 end
 test_tokenizer
@@ -174,3 +185,47 @@ test_For
 puts "\n"
 test_Mix
 puts "\n"
+test_FunctionToFunction
+puts "\n"
+test_RE_Fnc
+puts "\n"
+=begin
+let num = 100 ; 
+let time = 10 ;
+function add{
+	return @0 + @1 ;
+}
+while( time > 0 ){ 
+	for( let i = 0 ; i < time ; let i = i + 1 ;){
+		if( i == 2 ){
+			print time + i ;
+			if( time <= 5 ){
+				let num = num - 10 ;
+			}
+		}
+		else{
+			print time - i ;
+		}
+		print i ;
+	}
+	let time = time - 5 ;
+	print add( time , num );
+}
+print time ; 
+print num ;
+=end
+#"let num = 100 ; let time = 10 ; function add{ return @0 + @1 ;} while( time > 0 ){ for( let i = 0 ; i < time ; let i = i + 1 ;){ if( i == 2 ){ print time + i ; if( time <= 5 ){ let num = num - 10 ;} }else{ print time - i ; } print i ;} let time = time - 5 ; print add(time ,num);} print time ; print num ;"
+
+=begin
+function Sum(@0){
+    if(@0<2){
+        return 1;
+    }
+    else{
+        return @0 + Sum(@0-1);
+    }
+}
+print Sum(10);
+
+"function Sum{ if( @0 < 2 ){ return 1 ;}else{ return @0 + Sum( @0 - 1 );}} print Sum(10) ;"
+=end

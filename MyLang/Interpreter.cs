@@ -18,9 +18,12 @@ namespace MyLang
         public Dictionary<string, float> function_symbol_dict = new Dictionary<string, float>();
         public string function_symbol_str = "";
         public Dictionary<string, Ast.Ast> function_body_dict = new Dictionary<string, Ast.Ast>();
-        public string function_body_str = "";
         public Dictionary<float, float> Re_Funtion_index = new Dictionary<float, float>();
         public Dictionary<float, float> Re_Funtion_Number = new Dictionary<float, float>();
+        
+        public Dictionary<Exp, bool> ELSE_Select_Val = new Dictionary<Exp, bool>();
+        public Exp IF_SelectBody ;
+
         public string index_str;
 
         bool isFunction = false;
@@ -56,6 +59,7 @@ namespace MyLang
                             isElif = false;
                         }
                     }
+                    local_symbol_dict.Clear();
                 }
             }
             //--------------------------------------------------------------------------------------------------------------
@@ -171,7 +175,7 @@ namespace MyLang
                         Run(W.Body[i]);
                     }
                     isWhile = false;
-                    if(!isFunction)local_symbol_dict.Clear();
+                    //if(!isFunction)local_symbol_dict.Clear();
                     TF = Run_exp(W.SelectBody);
                 }
             }
@@ -187,7 +191,7 @@ namespace MyLang
             }
             else if(ast is ELSEStatement elses)
             {
-                if(isElse) ELSE_Body(elses);
+                if (ELSE_Select_Val[IF_SelectBody]) ELSE_Body(elses);
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
@@ -207,6 +211,7 @@ namespace MyLang
             var TF = Run_exp(elif_ifst.SelectBody);
             if (TF != 0)
             {
+                ELSE_Select_Val[IF_SelectBody] = false;
                 isElse = false;
                 isElif_body = true;
                 for (int i = 0; i < elif_ifst.Body.Length; i++)
@@ -214,9 +219,7 @@ namespace MyLang
                     Run(elif_ifst.Body[i]);
                 }
                 isElif_body = false;
-                if (!isFunction) local_symbol_dict.Clear();
             }
-
             isElif = false;
         }
         //--------------------------------------------------------------------------------------------------------------
@@ -228,7 +231,8 @@ namespace MyLang
             {
                 Run(else_ifst.Body[i]);
             }
-            if (!isFunction) local_symbol_dict.Clear();
+            //if (!isFunction) local_symbol_dict.Clear();
+            ELSE_Select_Val[IF_SelectBody] = false;
             isElse = false;
         }
         //--------------------------------------------------------------------------------------------------------------
@@ -236,6 +240,8 @@ namespace MyLang
         void IF_Body(Statement IFB)
         {
             var if_ifst = IFB as IFStatement;
+            IF_SelectBody = if_ifst.SelectBody;
+            ELSE_Select_Val[IF_SelectBody] = false;
             var TF = Run_exp(if_ifst.SelectBody);
             if (TF != 0)
             {
@@ -245,12 +251,14 @@ namespace MyLang
                 for (int i = 0; i < if_ifst.Body.Length; i++)
                 {
                     Run(if_ifst.Body[i]);
+                    IF_SelectBody = if_ifst.SelectBody;
                 }
                 isIF_body = false;
-                if(!isFunction)local_symbol_dict.Clear();
+                //if(!isFunction)local_symbol_dict.Clear();
             }
             else
             {
+                ELSE_Select_Val[IF_SelectBody] = true;
                 isElse = true;
                 isElif = true;
             }
