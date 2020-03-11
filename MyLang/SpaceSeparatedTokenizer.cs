@@ -13,9 +13,6 @@ namespace MyLang
     /// </summary>
     class SpaceSeparatedTokenizer : ITokenizer
     {
-        static Regex sepratorPattern = new Regex(@"\s+");//space or tab or... [ \n\r\t\f]
-        static Regex numberPattern = new Regex(@"^\d+$");//number [0-9]
-        static Regex symbolPattern = new Regex(@"^[\w_][\w_0-9]*$");//symbol  [a-zA-Z0-9_]
         public SpaceSeparatedTokenizer()
         {
 
@@ -23,9 +20,6 @@ namespace MyLang
 
         public IList<Token> Tokenize(string src)
         {
-            //var tokenStrs = sepratorPattern.Split(src).Where(s => s != "");
-            //return tokenStrs.Select(str => strToToken(str)).Concat(new[] { new Token(TokenType.Semicolon, ";") }).ToArray();
-
             #region Var
             // TODO: 仮のダミー実装
             var dummy = new List<Token>();
@@ -231,69 +225,6 @@ namespace MyLang
             //Console.WriteLine("Token");
             //Console.WriteLine(string.Join(" ", dummy.Select(t => t.Text).ToArray()) + "\n");
             return dummy;
-        }
-        Token strToToken(string str)
-        {
-            switch (str)
-            {
-                case "<":
-                    return new Token(TokenType.Less, "<");
-                case ">":
-                    return new Token(TokenType.More, ">");
-                case "":
-                    return new Token(TokenType.Space, "");
-                case "+":
-                    return new Token(TokenType.Plus, "+");
-                case "-":
-                    return new Token(TokenType.Minus, "-");
-                case "*":
-                    return new Token(TokenType.Star, "*");
-                case "/":
-                    return new Token(TokenType.Slash, "/");
-                case "(":
-                    return new Token(TokenType.LParenthesis, "(");
-                case ")":
-                    return new Token(TokenType.RParenthesis, ")");
-                case ";":
-                    return new Token(TokenType.Semicolon, ";");
-                case "=":
-                    return new Token(TokenType.Equal, "=");
-                case ",":
-                    return new Token(TokenType.Comma, ",");
-                case "@":
-                    return new Token(TokenType.Inser, "@");
-                case "{":
-                    return new Token(TokenType.LBraket, "{");
-                case "}":
-                    return new Token(TokenType.RBraket, "}");
-                case "for":
-                    return new Token(TokenType.FOR, "for");
-                case "while":
-                    return new Token(TokenType.WHILE, "while");
-                case "if":
-                    return new Token(TokenType.IF, "if");
-                case "elif":
-                    return new Token(TokenType.ELIF, "elif");
-                case "else":
-                    return new Token(TokenType.ELSE, "else");
-                case "print":
-                    return new Token(TokenType.Print, "print");
-                case "let":
-                    return new Token(TokenType.Let, "let");
-                case "function":
-                    return new Token(TokenType.Function, "function");
-                case "return":
-                    return new Token(TokenType.Return, "return");
-                default:
-                    if (numberPattern.IsMatch(str))
-                    {
-                        return new Token(TokenType.Number, str);
-                    }
-                    else
-                    {
-                        return new Token(TokenType.Symbol, str);
-                    }
-            }
         }
     }
 }

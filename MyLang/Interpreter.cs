@@ -66,7 +66,6 @@ namespace MyLang
             //--------------------------------------------------------------------------------------------------------------
             else if (ast is FunctionStatement afs)
             {
-                // isFunction = true;
                 function_symbol_str = afs.Name.Value;
                 function_body_dict[afs.Name.Value] = afs;
                 function_symbol_dict[function_symbol_str] = 0;
@@ -77,7 +76,6 @@ namespace MyLang
                         Run(afs.Body[i]);
                     }
                 }
-                //isFunction = false;
             }
             //--------------------------------------------------------------------------------------------------------------
             //--------------------------------------------------------------------------------------------------------------
@@ -85,18 +83,14 @@ namespace MyLang
             {
                 if(P.Exp is VarFunctionStatement VF)
                 {
-                    // var_function_symbol_str = VF.Name.Value;
                     float found;
                     if (function_symbol_dict.TryGetValue(VF.Name.Value, out found))
                     {
-                        //function_symbol_str = var_function_symbol_str;
                         function_symbol_str = VF.Name.Value;
                         isFunction = true;
-                        //var_function_symbol_dict[var_function_symbol_str] = VF.Args;
                         for (int i = 0; i < VF.Args.Length; i++)
                         {
                             local_symbol_dict["@" + i.ToString()] = Run_exp(VF.Args[i]);
-                            //Console.WriteLine("@"+i.ToString()+"----->" + local_symbol_dict["@" + i.ToString()]);
                         }
                         stack_ReFunction.Push(local_symbol_dict["@0"]);//開作弊模式不用減一，不開要減一
                         Run(function_body_dict[function_symbol_str]);
@@ -123,8 +117,6 @@ namespace MyLang
                     var Ans = Run_exp(R.Exp);
                     function_symbol_dict[function_symbol_str] = Ans;
                     Re_Funtion_Number[index] = Ans;
-
-                    //Logger.Trace("Run_exp(R.Exp) => " + function_symbol_dict[function_symbol_str]);
                 }
             }
             //--------------------------------------------------------------------------------------------------------------
@@ -175,7 +167,6 @@ namespace MyLang
                         Run(W.Body[i]);
                     }
                     isWhile = false;
-                    //if(!isFunction)local_symbol_dict.Clear();
                     TF = Run_exp(W.SelectBody);
                 }
             }
@@ -231,7 +222,6 @@ namespace MyLang
             {
                 Run(else_ifst.Body[i]);
             }
-            //if (!isFunction) local_symbol_dict.Clear();
             ELSE_Select_Val[IF_SelectBody] = false;
             isElse = false;
         }
@@ -254,7 +244,6 @@ namespace MyLang
                     IF_SelectBody = if_ifst.SelectBody;
                 }
                 isIF_body = false;
-                //if(!isFunction)local_symbol_dict.Clear();
             }
             else
             {

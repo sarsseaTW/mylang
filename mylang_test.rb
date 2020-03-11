@@ -120,7 +120,11 @@ end
 def test_Function
   testcases = [
     ["function ccc{ let a = @0 - @1 ; print @0 + @1 ; print a ;  return @0 * @1 ;} print ccc(3,4,5) ; print ccc(1+9-3,9*9) ;  print ccc() ;","Run_exp(L.Exp) => -1\nRun_exp(P.Exp) => 7\nRun_exp(P.Exp) => -1\nRun_exp(P.Exp) => 12\nRun_exp(L.Exp) => -74\nRun_exp(P.Exp) => 88\nRun_exp(P.Exp) => -74\nRun_exp(P.Exp) => 567\nRun_exp(L.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0\nRun_exp(P.Exp) => 0"],
-	["function a{ let b = 3 ; let c = b * 10 ; print b + c ;} function bb{ function a{ return @0 * 10 ;} return a(@0 + 10);} print bb(10) ;","Run_exp(P.Exp) => 200"]
+	["function a{ let b = 3 ; let c = b * 10 ; print b + c ;} function bb{ function a{ return @0 * 10 ;} return a(@0 + 10);} print bb(10) ;","Run_exp(P.Exp) => 200"],
+	["function add{ return @0 + @1 ;} print add(10,5) ;","Run_exp(P.Exp) => 15"],
+	["function sub{ return @0 - @1 ;} print sub(10,5) ;","Run_exp(P.Exp) => 5"],
+	["function star{ return @0 * @1 ;} print star(10,5) ;","Run_exp(P.Exp) => 50"],
+	["function slash{ return @0 / @1 ;} print slash(10,5) ;","Run_exp(P.Exp) => 2"]
   ]
   puts "** Testing Function"
   run_test(testcases, [MY_LANG_EXE])
@@ -229,3 +233,44 @@ print Sum(10);
 
 "function Sum{ if( @0 < 2 ){ return 1 ;}else{ return @0 + Sum( @0 - 1 );}} print Sum(10) ;"
 =end
+
+=begin
+
+function add
+{ 
+	return @0 + @1 ;
+}
+print add(10,5) ;
+
+function sub
+{ 
+	return @0 - @1 ;
+} 
+print sub(10,5) ;
+
+function star
+{
+	return @0 * @1 ;
+} 
+print star(10,5) ;
+
+function slash
+{ 
+	return @0 / @1 ;
+} 
+print slash(10,5) ;
+
+=end
+
+function fib
+{ 
+	if( @0 <= 2 )
+	{ 
+		return 1 ;
+	}
+	else
+	{ 
+		return fib( @0 - 1 ) + fib( @0 - 2 ) ;
+	}
+} 
+print fib(10) ;
